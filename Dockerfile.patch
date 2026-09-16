@@ -1,0 +1,55 @@
+# syntax=docker/dockerfile:1.20
+# Reuse the verified runtime and add the pinned instrumental adapter.
+FROM node:24-bookworm-slim AS frontend
+WORKDIR /build
+COPY package.json package-lock.json ./
+RUN npm ci --ignore-scripts
+COPY tsconfig.json vite.config.ts index.html ./
+COPY src ./src
+COPY public ./public
+RUN npm run build
+FROM madiator2011/cadentrail:0.4.5@sha256:35d1fb08a4e5dcce43cf97a1c16a41a43d0a206cb32107e13096e5f9ad724927 AS packaged-runtime
+COPY backend/tool_model_manifest.json /build/tool_model_manifest.json
+COPY scripts/bake_tool_models.py /build/bake_tool_models.py
+RUN python /build/bake_tool_models.py
+RUN pip install --no-cache-dir librosa==0.11.0 && pip check
+COPY scripts/runtime-requirements.txt /opt/cadentrail/runtime-requirements.txt
+# Assemble small, frequently changing application files in one release layer.
+FROM frontend AS application-files
+COPY backend /release/app/backend
+COPY docs/THIRD-PARTY.md CREDITS.md LICENSE NOTICE pyproject.toml /release/app/
+COPY docs/licenses /release/opt/cadentrail/licenses
+COPY --from=packaged-runtime /opt/cadentrail/core-models/yue2/LICENSE /release/opt/cadentrail/licenses/CC-BY-NC-4.0.txt
+COPY --from=packaged-runtime /opt/cadentrail/core-models/manifest.json /release/opt/cadentrail/core-models/manifest.json
+COPY --from=packaged-runtime /opt/cadentrail/bundled-tools/manifest.json /release/opt/cadentrail/bundled-tools/manifest.json
+COPY scripts/entrypoint.sh /release/usr/local/bin/studio-start
+RUN cp -a /build/dist /release/app/dist && sed -i 's/\r$//' /release/usr/local/bin/studio-start && chmod +x /release/usr/local/bin/studio-start
+
+# Eight data layers: runtime, six independent model sets, application.
+# BuildKit also records an empty WORKDIR layer (nine image layers total).
+# No installed packages or model files are recomputed in this final stage.
+FROM scratch AS release
+COPY --from=packaged-runtime --exclude=app --exclude=build --exclude=opt/cadentrail/core-models --exclude=opt/cadentrail/bundled-tools --exclude=opt/cadentrail/licenses --exclude=usr/local/bin/studio-start / /
+COPY --from=packaged-runtime /opt/cadentrail/core-models/yue2 /opt/cadentrail/core-models/yue2
+COPY --from=packaged-runtime /opt/cadentrail/core-models/yue2-vae /opt/cadentrail/core-models/yue2-vae
+COPY --from=packaged-runtime /opt/cadentrail/bundled-tools/realaudio-v4 /opt/cadentrail/bundled-tools/realaudio-v4
+COPY --from=packaged-runtime /opt/cadentrail/bundled-tools/demucs /opt/cadentrail/bundled-tools/demucs
+COPY --from=packaged-runtime /opt/cadentrail/bundled-tools/sortformer /opt/cadentrail/bundled-tools/sortformer
+COPY --from=packaged-runtime /opt/cadentrail/bundled-tools/instrumental-v1 /opt/cadentrail/bundled-tools/instrumental-v1
+COPY --from=application-files /release/ /
+ENV PATH=/usr/local/bin:/usr/local/sbin:/usr/sbin:/usr/bin:/sbin:/bin LANG=C.UTF-8 \
+    PYTHONUNBUFFERED=1 PIP_DISABLE_PIP_VERSION_CHECK=1 HF_HUB_DISABLE_TELEMETRY=1 \
+    DAW_STORAGE=/workspace/yue2-daw HF_HOME=/workspace/yue2-daw/models/huggingface \
+    TORCH_HOME=/workspace/yue2-daw/cache/torch NVIDIA_VISIBLE_DEVICES=all \
+    NVIDIA_DRIVER_CAPABILITIES=compute,utility \
+    DAW_CORE_MODELS=/opt/cadentrail/core-models DAW_BUNDLED_TOOLS=/opt/cadentrail/bundled-tools
+WORKDIR /app
+LABEL org.opencontainers.image.version="0.4.11" \
+      org.opencontainers.image.title="Cadentrail — A DAW for YuE2" \
+      org.opencontainers.image.description="Independent browser DAW for YuE2, created by Madiator2011 and built for Runpod" \
+      org.opencontainers.image.authors="Madiator2011"
+EXPOSE 8000
+VOLUME ["/workspace"]
+HEALTHCHECK --interval=30s --timeout=5s --start-period=40s --retries=3 \
+  CMD python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health',timeout=4)"
+ENTRYPOINT ["/usr/bin/tini","--","/usr/local/bin/studio-start"]

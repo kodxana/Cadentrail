@@ -1,0 +1,64 @@
+{
+  "realaudio-v4": {
+    "id": "realaudio-v4",
+    "name": "Mothersuperior real-audio tools",
+    "repo": "Mothersuperior/yue2-mothersuperior-realaudio-tokenizer-v4",
+    "revision": "f2278a2e005dc4ecc421c53a0929f62b3aeb2280",
+    "core": false,
+    "files": [
+      {
+        "path": "nar_lora_joint_v4.pt",
+        "bytes": 140626123,
+        "sha256": "df175dbf9405a8e15b2c3f8dbdcc97303575f763787f227b03029020e28102fe"
+      },
+      {
+        "path": "tokenizer_head_joint_v4.pt",
+        "bytes": 171305291,
+        "sha256": "d23c4f757a05f031134b8471ec84245ec2338966516e1a9e26a17ff300a5f87e"
+      }
+    ],
+    "bytes": 311931414
+  },
+  "demucs": {
+    "id": "demucs",
+    "name": "Demucs stem separation",
+    "core": false,
+    "repo": "facebookresearch/demucs",
+    "url": "https://dl.fbaipublicfiles.com/demucs/hybrid_transformer/955717e8-8726e21a.th",
+    "filename": "955717e8-8726e21a.th",
+    "sha256Prefix": "8726e21a",
+    "bytes": 84141911,
+    "sha256": "8726e21a993978c7ba086d3872e7608d7d5bfca646ca4aca459ffda844faa8b4"
+  },
+  "sortformer": {
+    "id": "sortformer",
+    "name": "Voice detection \u00b7 NVIDIA Sortformer 2.1",
+    "repo": "nvidia/diar_streaming_sortformer_4spk-v2.1",
+    "revision": "fafaab5faa1617a0ca52d38dd3dc4bd636800d3d",
+    "files": [
+      {
+        "path": "diar_streaming_sortformer_4spk-v2.1.nemo",
+        "bytes": 471367680,
+        "sha256": "8abd32832159c6ac1148c926b7276f35ba34582c444e559dce1f1253fea42ef8"
+      }
+    ],
+    "bytes": 471367680,
+    "core": false
+  },
+  "instrumental-v1": {
+    "id": "instrumental-v1",
+    "name": "Instrumental music \u00b7 Mothersuperior",
+    "repo": "Mothersuperior/YuE2-instrumental-cot-full-loras",
+    "revision": "947f2f4b28978b2b6c3e316e6a87925c76bf3c4b",
+    "core": false,
+    "files": [
+      {
+        "path": "ar_lora_inst_v3abc.bf16.safetensors",
+        "bytes": 139502088,
+        "sha256": "e408fd3148b75b1165f7ddbf63db575d83bb6402a0b5f876fcb767dbcb2c5414"
+      }
+    ],
+    "bytes": 139502088,
+    "license": "cc-by-nc-4.0"
+  }
+}

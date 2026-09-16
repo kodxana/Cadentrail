@@ -1,0 +1,940 @@
+/* Component finishing rules. Layout stays with each workspace; shared chrome works outside .app. */
+button,
+a.button,
+input,
+select,
+textarea {
+  border-radius: 7px;
+}
+button,
+a.button {
+  transition:
+    background-color 140ms ease,
+    border-color 140ms ease,
+    color 140ms ease;
+}
+button:hover:not(:disabled),
+a.button:hover {
+  background-color: var(--ui-hover);
+}
+button.primary,
+.primary {
+  background: var(--ui-primary) !important;
+  color: var(--ui-on-primary) !important;
+  border-color: var(--ui-primary) !important;
+}
+.primary:hover:not(:disabled) {
+  background: var(--ui-primary-hover) !important;
+}
+:where(a:not(.button)) {
+  color: var(--experience-secondary);
+  text-underline-offset: 3px;
+}
+:where(a:not(.button)):hover {
+  color: var(--experience-ink);
+}
+:where(summary):focus-visible {
+  outline: 2px solid var(--ui-primary);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--ui-focus);
+  box-shadow: 0 0 0 2px var(--ui-focus-ring);
+}
+select option {
+  background: var(--experience-solid);
+  color: var(--experience-ink);
+}
+pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.logo svg,
+.brand-tagline,
+.brand-credits a {
+  color: var(--experience-ink);
+}
+.brand-credits {
+  color: var(--experience-muted);
+}
+.brand-credits strong {
+  color: var(--experience-secondary);
+}
+
+/* Authentication, loading and project recovery are part of the same experience. */
+.auth-screen {
+  height: 100dvh;
+  overflow: auto;
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  padding: 32px clamp(24px, 5vw, 76px);
+  background: var(--ui-background);
+}
+.auth-screen > .listening-atmosphere {
+  z-index: -1;
+}
+.auth-screen > header {
+  padding: 8px 0;
+}
+.auth-screen > footer {
+  padding: 24px 0 4px;
+}
+.auth-screen > footer .brand-credits {
+  text-align: center;
+  align-items: center;
+  font-size: 10px;
+  line-height: 1.6;
+}
+.auth-content {
+  align-self: center;
+  justify-self: center;
+  width: min(100%, 460px);
+  padding: 48px 0;
+}
+.auth-screen .login,
+.auth-screen .fatal {
+  height: auto;
+  padding: 0;
+  background: transparent;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 20px;
+  text-align: left;
+}
+.auth-screen h1 {
+  font:
+    600 clamp(29px, 4vw, 40px)/1.2 "Manrope",
+    sans-serif;
+  letter-spacing: -1.4px;
+  color: var(--experience-ink);
+  margin: 0;
+}
+.auth-screen p {
+  color: var(--experience-secondary);
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+.auth-screen .login form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+  margin-top: 8px;
+}
+.auth-screen input {
+  width: 100%;
+  min-height: 48px;
+  font-size: 16px;
+  padding: 12px 16px;
+  background: #ffffff06;
+  border-color: var(--ui-border);
+}
+.auth-screen button {
+  min-height: 46px;
+  font-size: 13px;
+  border-radius: 24px;
+}
+.auth-screen .fatal button {
+  margin: 0;
+}
+.auth-screen [role="alert"] {
+  color: var(--ui-danger);
+}
+.auth-screen .loading-state {
+  align-items: center;
+  text-align: center;
+}
+.loading-state .spinner {
+  width: 26px;
+  height: 26px;
+  border-width: 2px;
+}
+
+/* Native and standalone dialogs share one surface, focus ring and mobile sizing. */
+.modal,
+.model-download-dialog,
+.access-dialog,
+.task-center,
+.library-dialog {
+  color: var(--experience-ink);
+  background: var(--experience-solid);
+  border: 1px solid var(--ui-border);
+  border-radius: 16px;
+  box-shadow: 0 24px 90px #0007;
+  max-width: calc(100vw - 32px);
+  max-height: calc(100dvh - 32px);
+  overscroll-behavior: contain;
+}
+dialog.modal {
+  margin: auto;
+}
+dialog::backdrop {
+  background: var(--ui-backdrop);
+  backdrop-filter: blur(14px);
+}
+.modal::backdrop,
+.model-download-dialog::backdrop,
+.access-dialog::backdrop,
+.task-center::backdrop,
+.library-dialog::backdrop {
+  background: var(--ui-backdrop);
+  backdrop-filter: blur(14px);
+}
+.modal-title {
+  gap: 18px;
+  align-items: flex-start;
+}
+.modal-title h2,
+.model-download-dialog h2 {
+  font-size: 24px;
+  line-height: 1.3;
+  letter-spacing: -0.7px;
+}
+.modal-title > button,
+.model-download-heading > button {
+  flex-shrink: 0;
+  min-width: 32px;
+  min-height: 32px;
+  border-radius: 50%;
+}
+.modal p,
+.model-download-dialog p,
+.access-dialog p {
+  color: var(--experience-secondary);
+}
+.model-download-icon {
+  color: var(--experience-ink);
+  background: var(--experience-raised);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+}
+.model-download-list li {
+  border-color: var(--line);
+  gap: 20px;
+  padding: 16px 0;
+  align-items: center;
+}
+.model-download-list li > div {
+  min-width: 0;
+}
+.model-download-list span {
+  overflow-wrap: anywhere;
+  color: var(--experience-muted);
+}
+.model-download-list b {
+  white-space: nowrap;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+.model-download-storage {
+  color: var(--experience-secondary);
+  align-items: flex-start;
+  line-height: 1.5;
+}
+.model-download-storage svg,
+.model-download-core svg {
+  flex-shrink: 0;
+}
+.model-download-core {
+  align-items: flex-start;
+  padding-top: 4px;
+}
+.model-download-dialog .model-download-warning {
+  color: var(--ui-warning);
+}
+.model-download-dialog footer,
+.access-dialog footer {
+  gap: 10px;
+  align-items: center;
+}
+.model-download-dialog footer button,
+.access-dialog footer button {
+  min-height: 39px;
+  border-radius: 22px;
+  padding-inline: 16px;
+}
+.model-download-dialog small {
+  color: var(--experience-muted);
+  line-height: 1.5;
+}
+.access-dialog code {
+  color: var(--experience-ink);
+  background: var(--experience-raised);
+  border-radius: 4px;
+  padding: 2px 4px;
+  overflow-wrap: anywhere;
+}
+.access-dialog details {
+  border-top: 1px solid var(--line);
+  padding-top: 16px;
+}
+.start-choices button {
+  background: var(--experience-raised);
+  border-color: var(--ui-border);
+  border-radius: 12px;
+}
+.start-choices button:hover {
+  background: var(--experience-selected);
+}
+.history-list button {
+  gap: 16px;
+  align-items: flex-start;
+  text-align: left;
+}
+.history-list button > span {
+  min-width: 0;
+  white-space: normal;
+}
+.history-list small {
+  flex-shrink: 0;
+}
+.shortcut {
+  gap: 16px;
+  color: var(--experience-secondary);
+}
+.shortcut kbd {
+  text-align: center;
+  color: var(--experience-ink);
+  border-color: var(--ui-border);
+}
+.export-data a,
+.export-data button {
+  background: var(--experience-raised);
+  border: 1px solid var(--line);
+  font-size: 11px;
+}
+
+/* Studio detail controls retain their density and color-coded tracks. */
+.app .inspector-heading,
+.app .field > span b,
+.app .field small,
+.app .checkbox,
+.app .loop-range,
+.app .tempo-box button,
+.app .transport-clock small,
+.app .engine-state {
+  color: var(--experience-secondary);
+}
+.app .transport-clock strong span {
+  color: var(--experience-muted);
+}
+.app .browser-section,
+.app .asset-row small,
+.app .section-row span {
+  color: var(--experience-muted);
+}
+.app .drop-hint {
+  background: var(--experience-surface);
+  border-color: var(--ui-border);
+}
+.app .drop-hint small {
+  color: var(--experience-muted);
+}
+.app .inspector-divider {
+  background: var(--line);
+}
+.app .effect {
+  border-radius: 9px;
+  padding: 10px 9px;
+  margin-top: 9px;
+}
+.app .effect-title strong {
+  color: var(--experience-ink);
+}
+.app .effect-title button {
+  min-height: 25px;
+  min-width: 23px;
+  padding: 3px;
+  background: transparent;
+}
+.app .effect-title button:hover {
+  background: var(--experience-selected);
+}
+.app .effect-param {
+  color: var(--experience-secondary);
+  font-size: 10px;
+}
+.app .effect-param output {
+  color: var(--experience-ink);
+  font-variant-numeric: tabular-nums;
+}
+.app .automation-editor {
+  background: var(--ui-editor);
+  border-color: var(--line);
+}
+.app .master-channel {
+  border-top-color: var(--ui-primary);
+}
+.app .master-mark {
+  color: var(--experience-secondary);
+}
+.app .step-row button {
+  background: var(--experience-raised);
+  border-color: var(--line);
+}
+.app .step-row button.beat {
+  border-color: var(--ui-border);
+}
+.app .step-row button.on {
+  background: var(--ui-primary);
+  border-color: var(--ui-primary);
+}
+.app .chord-token {
+  background: var(--experience-raised);
+  border-color: var(--ui-border);
+  border-radius: 7px;
+}
+.app .abc-source,
+.app .notation {
+  background: var(--ui-inset);
+  color: var(--experience-ink);
+  border-color: var(--line);
+}
+.app .analysis {
+  background: transparent;
+}
+.app .analysis-stats {
+  background: var(--line);
+  border-color: var(--line);
+}
+.app .analysis-notes table {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+.app .analysis-notes th,
+.app .analysis-notes td {
+  border-color: var(--line);
+}
+.app details.analysis-notes,
+.app .real-audio-tools {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 16px;
+  background: var(--experience-surface);
+}
+.app .real-audio-tools summary span {
+  font-weight: 400;
+  display: inline-block;
+}
+.app .encoding-result {
+  background: var(--experience-raised);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+/* The same selected states apply to assets, assistant drafts, timelines and queues. */
+.app .draft-index button[aria-pressed="true"],
+.file-list > button[aria-pressed="true"],
+.app .artwork-thumbnails button.selected,
+.app .scene-lanes > button.selected {
+  border-color: var(--ui-focus);
+  background: var(--experience-selected);
+}
+.app .draft-index button[aria-pressed="true"] {
+  box-shadow: inset 2px 0 var(--ui-primary);
+}
+.app .preview-transport {
+  background: var(--experience-raised);
+  border-color: var(--line);
+}
+.app .preview-transport button {
+  color: var(--experience-ink);
+}
+.app .scene-bar {
+  background: var(--ui-control);
+  color: var(--experience-ink);
+  border-left-color: var(--ui-primary);
+}
+.app .scene-lanes > button,
+.app .video-renders > div,
+.app .media-grid article,
+.queue-item {
+  background: var(--experience-surface);
+  border-color: var(--line);
+}
+.app .lyric-lines > button.playing {
+  color: var(--experience-ink);
+  box-shadow: inset 2px 0 var(--ui-primary);
+}
+.app .song-take.selected .song-wave {
+  color: var(--ui-primary);
+}
+.take-menu,
+.track-menu,
+.dock-queue,
+.lyrics-tools-menu {
+  background: var(--experience-solid);
+  border-color: var(--ui-border);
+  border-radius: 10px;
+}
+.file-list {
+  background: var(--ui-inset);
+}
+.file-list > button[aria-pressed="true"] {
+  box-shadow: inset 2px 0 var(--ui-primary);
+}
+.file-format {
+  background: var(--experience-raised);
+  color: var(--experience-secondary);
+}
+.job-outputs a {
+  background: var(--experience-raised);
+}
+.job-progress progress,
+.model-downloads progress {
+  accent-color: var(--ui-primary);
+}
+.job-progress progress::-webkit-progress-value {
+  background: var(--ui-primary);
+}
+.job-progress progress::-moz-progress-bar {
+  background: var(--ui-primary);
+}
+.job-progress progress:indeterminate {
+  background: linear-gradient(
+    90deg,
+    var(--ui-control) 15%,
+    var(--experience-muted) 50%,
+    var(--ui-control) 85%
+  );
+  background-size: 200% 100%;
+}
+.take-progress i.working {
+  background: var(--ui-primary);
+}
+.toast,
+.busy-indicator {
+  background: var(--experience-solid);
+  color: var(--experience-ink);
+  border-color: var(--ui-border);
+  border-radius: 12px;
+}
+.toast.error {
+  background: var(--ui-danger-surface);
+  border-color: var(--ui-danger-border);
+  color: var(--ui-danger);
+}
+.spinner {
+  border-color: var(--ui-grid);
+  border-top-color: var(--ui-primary);
+}
+@media (max-width: 760px) {
+  .auth-screen {
+    padding: 20px 24px;
+  }
+  .auth-content {
+    padding: 40px 0;
+  }
+  .modal,
+  .model-download-dialog,
+  .access-dialog {
+    padding: 22px;
+  }
+  .modal .form-row {
+    flex-wrap: wrap;
+  }
+  .modal .form-row > .field {
+    min-width: 120px;
+    flex: 1;
+  }
+  .model-download-dialog footer {
+    flex-wrap: wrap;
+  }
+  .model-download-dialog footer .primary {
+    flex: 1;
+  }
+  .model-download-dialog .model-download-storage {
+    font-size: 11px;
+  }
+  .history-list button {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .shortcut {
+    font-size: 10px;
+  }
+  .shortcut kbd {
+    max-width: 55%;
+    white-space: normal;
+  }
+  .start-choices {
+    grid-template-columns: 1fr;
+  }
+  .app .real-audio-tools {
+    margin: 12px;
+  }
+  .app .real-audio-controls {
+    gap: 14px;
+  }
+  .app .real-audio-tools summary span {
+    margin: 5px 0 0;
+    display: block;
+  }
+  .app .encoding-result > a {
+    float: none;
+    display: block;
+    margin-top: 8px;
+  }
+  .app .analysis-notes {
+    overflow-x: auto;
+  }
+  .app .analysis-notes table {
+    font-size: 10px;
+    min-width: 320px;
+  }
+  .toast {
+    max-width: calc(100vw - 24px);
+    bottom: 24px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  button,
+  a.button {
+    transition: none;
+  }
+  .job-progress progress:indeterminate {
+    animation: none;
+    background: var(--experience-muted);
+  }
+}
+
+@media (max-width: 760px) {
+  .app.experience-studio {
+    min-width: 0;
+  }
+  .app .transport,
+  .app .workspace-tabs {
+    max-width: 100%;
+    overflow-x: auto;
+    flex-shrink: 0;
+  }
+  .app .transport > *,
+  .app .workspace-tabs > * {
+    flex-shrink: 0;
+  }
+  .app .studio-layout {
+    min-width: 0;
+    min-height: 0;
+  }
+}
+
+.mobile-workspace-menu {
+  display: none;
+}
+@media (max-width: 760px) {
+  .app .primary-navigation .studio-entry {
+    display: none;
+  }
+  .mobile-workspace-menu {
+    display: block;
+    position: relative;
+    flex-shrink: 0;
+  }
+  .mobile-workspace-menu > summary {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 7px 10px;
+    border-radius: 22px;
+    cursor: pointer;
+    font-size: 12px;
+    color: var(--experience-secondary);
+    list-style: none;
+  }
+  .mobile-workspace-menu > summary::before,
+  .mobile-workspace-menu > summary::-webkit-details-marker {
+    display: none;
+  }
+  .mobile-workspace-menu > div {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    z-index: 70;
+    padding: 6px;
+    background: var(--experience-solid);
+    border: 1px solid var(--ui-border);
+    border-radius: 12px;
+    box-shadow: 0 12px 36px #0006;
+  }
+  .app .mobile-workspace-menu button {
+    min-height: 42px;
+    white-space: nowrap;
+  }
+  .app .primary-navigation {
+    overflow: visible;
+  }
+}
+
+.auth-screen .listen-brand,
+.auth-screen .listen-brand > span {
+  display: block;
+}
+
+.app .channel:not(.master-channel) {
+  border-top-color: var(--track-color);
+}
+.file-list > button {
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
+}
+.file-list > button:hover {
+  background: var(--experience-raised);
+}
+.task-center-tabs > button:not(.active) {
+  background: transparent;
+}
+.app .real-audio-tools > a {
+  display: block;
+  width: fit-content;
+  margin-top: 12px;
+}
+
+/* Reliability tools share the workstation palette and dialog primitives. */
+.recovery-dialog {
+  width: min(820px, 94vw);
+}
+.recovery-dialog fieldset {
+  min-width: 0;
+  margin: 18px 0;
+  padding: 14px;
+  border: 1px solid var(--ui-border);
+  border-radius: 10px;
+}
+.recovery-dialog legend {
+  color: var(--experience-secondary);
+  padding: 0 6px;
+  overflow-wrap: anywhere;
+}
+.recovery-choices {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.recovery-choices label {
+  min-width: 0;
+  color: var(--experience-secondary);
+}
+.recovery-choices label:has(:checked) {
+  color: var(--experience-ink);
+}
+.recovery-choices input {
+  margin-right: 8px;
+}
+.recovery-choices pre {
+  white-space: pre-wrap;
+  overflow: auto;
+  max-height: 180px;
+  font-size: 12px;
+  padding: 12px;
+  background: var(--ui-inset);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+.recovery-choices label:has(:checked) pre {
+  border-color: var(--ui-focus);
+}
+.recovery-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 18px;
+}
+.recovery-warning {
+  position: fixed;
+  bottom: 96px;
+  left: 20px;
+  right: 20px;
+  z-index: 150;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px;
+  color: var(--ui-warning);
+  background: var(--experience-solid);
+  border: 1px solid var(--ui-warning);
+  border-radius: 10px;
+}
+.workspace-tools {
+  width: min(850px, 94vw);
+}
+.workspace-tools-tabs {
+  display: flex;
+  width: fit-content;
+  padding: 4px;
+  gap: 4px;
+  margin-bottom: 18px;
+  border: 1px solid var(--line);
+  background: var(--ui-inset);
+  border-radius: 10px;
+}
+.workspace-tools-tabs button {
+  color: var(--experience-secondary);
+  background: transparent;
+  border-color: transparent;
+  min-width: 110px;
+  gap: 8px;
+}
+.workspace-tools-tabs button.active {
+  color: var(--experience-ink);
+  background: var(--experience-selected);
+}
+.workspace-tools h3,
+.backup-status strong {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.workspace-tools h3 {
+  margin: 18px 0 6px;
+}
+.workspace-tools hr {
+  border: 0;
+  border-top: 1px solid var(--line);
+  margin: 18px 0;
+}
+.model-list section {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid var(--line);
+  padding: 14px 0;
+}
+.model-list small,
+.backup-status span {
+  display: block;
+  color: var(--experience-muted);
+  margin-top: 4px;
+}
+.model-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+.backup-projects {
+  display: grid;
+  gap: 4px;
+  max-height: 240px;
+  overflow: auto;
+  margin: 12px 0;
+}
+.backup-projects label {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  min-height: 40px;
+  padding: 6px 8px;
+  border-radius: 7px;
+}
+.backup-projects label:has(:checked) {
+  background: var(--experience-raised);
+}
+.backup-status {
+  padding: 18px 0;
+  display: grid;
+  gap: 8px;
+}
+.backup-status strong svg {
+  color: var(--ui-success);
+}
+.backup-status code {
+  overflow-wrap: anywhere;
+}
+.maintenance-job {
+  display: grid;
+  gap: 6px;
+  padding: 14px 0;
+  border-top: 1px solid var(--line);
+}
+.maintenance-job span {
+  color: var(--experience-secondary);
+}
+@media (max-width: 600px) {
+  .recovery-choices {
+    grid-template-columns: 1fr;
+  }
+  .recovery-actions button,
+  .workspace-tools button,
+  .workspace-tools a.button {
+    min-height: 44px;
+  }
+  .recovery-warning {
+    left: 8px;
+    right: 8px;
+    flex-wrap: wrap;
+  }
+  .workspace-tools-tabs {
+    width: 100%;
+  }
+  .workspace-tools-tabs button {
+    flex: 1;
+  }
+  .workspace-tools input[type="file"] {
+    max-width: 100%;
+    margin-top: 10px;
+  }
+}
+
+.workspace-tool-error { color:var(--ui-danger)!important; border:1px solid var(--ui-danger-border); background:var(--ui-danger-surface); padding:12px; border-radius:8px; }
+.maintenance-job > button { justify-self:start; }
+.maintenance-job .model-downloads { min-width:0; }
+/* Song assistance uses the same quiet selected surface as the listening room. */
+.assistant-contexts { display: flex; gap: 8px; }
+.assistant-contexts > button { flex: 1; min-width: 0; padding: 12px; border: 1px solid var(--ui-border); color: var(--experience-secondary); }
+.app .assistant-contexts > button[aria-pressed="true"],
+.app .writing-actions > button[aria-pressed="true"] { background: var(--experience-selected); border-color: var(--ui-primary); color: var(--experience-ink); box-shadow: inset 0 -2px var(--ui-primary); }
+.assistant-contexts > button span { flex: 1; text-align: left; }
+.assistant-focus { padding: 0 0 0 12px; border-left: 2px solid var(--ui-focus); }
+.assistant-focus strong { font-size: 12px; }
+.assistant-focus p, .assistant-focus small { color: var(--experience-secondary); line-height: 1.55; font-size: 12px; }
+.assistant-focus p { margin: 6px 0; }
+.assistant-availability { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; font-size: 12px; color: var(--experience-secondary); line-height: 1.5; }
+@media (max-width: 600px) {
+  .writing-title { flex-wrap: wrap; gap: 12px; }
+  .writing-submit { flex-wrap: wrap; }
+  .writing-submit > button { width: 100%; justify-content: center; }
+  .assistant-contexts > button { min-height: 44px; }
+  .draft-review { grid-template-columns: minmax(0,1fr); }
+  .draft-index { max-height: 170px; border-right: 0; border-bottom: 1px solid var(--experience-line); padding: 0 0 10px; }
+}
+.project-navigation { display: flex; gap: 5px; flex-shrink: 0; }
+.project-navigation > button { min-height: 32px; font-size: 12px; white-space: nowrap; background: var(--experience-raised); }
+.project-switcher { width: min(600px, calc(100vw - 24px)); max-height: calc(100dvh - 40px); overflow-y: auto; }
+.project-switcher .modal-title h2 { margin: 6px 0 0; }
+.project-search { display: flex; align-items: center; gap: 8px; padding: 0 12px; border: 1px solid var(--ui-border); border-radius: 9px; margin: 20px 0 12px; }
+.project-search:focus-within { border-color: var(--ui-primary); }
+.project-search input { width: 100%; border: 0; background: transparent; min-height: 44px; box-shadow: none; }
+.project-switcher-tools { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; font-size: 12px; color: var(--experience-secondary); }
+.project-switcher-tools label { margin: 0; }
+.project-switcher-list { max-height: 48dvh; overflow-y: auto; }
+.project-switcher-list > button { width: 100%; display: flex; align-items: center; text-align: left; gap: 12px; padding: 12px; border-radius: 8px; border: 1px solid transparent; }
+.project-switcher-list > button.current { background: var(--experience-selected); border-color: var(--ui-focus); }
+.project-switcher-list > button:hover { background: var(--experience-raised); }
+.project-switcher-list img, .project-placeholder { width: 44px; height: 44px; flex-shrink: 0; border-radius: 5px; object-fit: cover; }
+.project-placeholder { display: grid; place-items: center; background: var(--experience-raised); color: var(--experience-secondary); }
+.project-switcher-copy { display: grid; gap: 6px; flex: 1; min-width: 0; }
+.project-switcher-copy strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.project-switcher-copy small, .project-current, .project-empty { color: var(--experience-secondary); font-size: 12px; }
+.project-current { display: flex; align-items: center; gap: 5px; }
+.project-open-icon { transform: rotate(-90deg); }
+.project-empty { padding: 20px 10px; line-height: 1.6; }
+.project-switcher-error { color: var(--ui-warning); }
+@media (max-width: 600px) {
+  .app .project-toolbar { height: 48px; min-height: 48px; }
+  .project-navigation > button { min-height: 40px; padding: 6px 8px; }
+  .app .project-toolbar .session-name { width: 132px; }
+  .project-switcher { padding: 20px; }
+  .project-current { font-size: 0; }
+  .project-switcher-tools button { min-height: 40px; }
+}

@@ -1,0 +1,588 @@
+{
+  "yue2": {
+    "id": "yue2",
+    "name": "YuE2 music engine",
+    "repo": "m-a-p/YuE2-3B",
+    "revision": "29b3558dd46954a0cd9021dc76d5c91864a0f1c7",
+    "core": true,
+    "files": [
+      {
+        "path": "LICENSE",
+        "bytes": 20309
+      },
+      {
+        "path": "THIRD_PARTY_NOTICES.md",
+        "bytes": 793
+      },
+      {
+        "path": "config.json",
+        "bytes": 959
+      },
+      {
+        "path": "generation_config.json",
+        "bytes": 204
+      },
+      {
+        "path": "licenses/SnakeBeta-NVIDIA-MIT.txt",
+        "bytes": 1076
+      },
+      {
+        "path": "licenses/stable-audio-tools-MIT.txt",
+        "bytes": 1069
+      },
+      {
+        "path": "model.safetensors",
+        "bytes": 7261441640
+      },
+      {
+        "path": "modeling_yue2.py",
+        "bytes": 32983
+      },
+      {
+        "path": "qwen.tiktoken",
+        "bytes": 2561218
+      },
+      {
+        "path": "weights_manifest.json",
+        "bytes": 179
+      },
+      {
+        "path": "yue2_generation_config.json",
+        "bytes": 466
+      }
+    ],
+    "bytes": 7264060896
+  },
+  "yue2-vae": {
+    "id": "yue2-vae",
+    "name": "YuE2 audio decoder",
+    "repo": "m-a-p/YuE2-Vae",
+    "revision": "9a94e1d0ea9f8087e98f77fa88df4a4068104d2a",
+    "core": true,
+    "files": [
+      {
+        "path": "LICENSE",
+        "bytes": 20309
+      },
+      {
+        "path": "THIRD_PARTY_NOTICES.md",
+        "bytes": 793
+      },
+      {
+        "path": "config.json",
+        "bytes": 1378
+      },
+      {
+        "path": "licenses/SnakeBeta-NVIDIA-MIT.txt",
+        "bytes": 1076
+      },
+      {
+        "path": "licenses/stable-audio-tools-MIT.txt",
+        "bytes": 1069
+      },
+      {
+        "path": "model.safetensors",
+        "bytes": 530512720
+      },
+      {
+        "path": "modeling_vae.py",
+        "bytes": 25265
+      },
+      {
+        "path": "weights_manifest.json",
+        "bytes": 178
+      }
+    ],
+    "bytes": 530562788
+  },
+  "sdxl": {
+    "id": "sdxl",
+    "name": "SDXL artwork",
+    "repo": "stabilityai/stable-diffusion-xl-base-1.0",
+    "revision": "462165984030d82259a11f4367a4eed129e94a7b",
+    "core": false,
+    "files": [
+      {
+        "path": "model_index.json",
+        "bytes": 609
+      },
+      {
+        "path": "scheduler/scheduler_config.json",
+        "bytes": 479
+      },
+      {
+        "path": "text_encoder/config.json",
+        "bytes": 565
+      },
+      {
+        "path": "text_encoder/model.fp16.safetensors",
+        "bytes": 246144152
+      },
+      {
+        "path": "text_encoder_2/config.json",
+        "bytes": 575
+      },
+      {
+        "path": "text_encoder_2/model.fp16.safetensors",
+        "bytes": 1389382176
+      },
+      {
+        "path": "tokenizer/merges.txt",
+        "bytes": 524619
+      },
+      {
+        "path": "tokenizer/special_tokens_map.json",
+        "bytes": 472
+      },
+      {
+        "path": "tokenizer/tokenizer_config.json",
+        "bytes": 737
+      },
+      {
+        "path": "tokenizer/vocab.json",
+        "bytes": 1059962
+      },
+      {
+        "path": "tokenizer_2/merges.txt",
+        "bytes": 524619
+      },
+      {
+        "path": "tokenizer_2/special_tokens_map.json",
+        "bytes": 460
+      },
+      {
+        "path": "tokenizer_2/tokenizer_config.json",
+        "bytes": 725
+      },
+      {
+        "path": "tokenizer_2/vocab.json",
+        "bytes": 1059962
+      },
+      {
+        "path": "unet/config.json",
+        "bytes": 1680
+      },
+      {
+        "path": "unet/diffusion_pytorch_model.fp16.safetensors",
+        "bytes": 5135149760
+      },
+      {
+        "path": "vae/config.json",
+        "bytes": 642
+      },
+      {
+        "path": "vae/diffusion_pytorch_model.fp16.safetensors",
+        "bytes": 167335342
+      },
+      {
+        "path": "vae_1_0/config.json",
+        "bytes": 607
+      },
+      {
+        "path": "vae_1_0/diffusion_pytorch_model.fp16.safetensors",
+        "bytes": 167335342
+      },
+      {
+        "path": "vae_decoder/config.json",
+        "bytes": 607
+      },
+      {
+        "path": "vae_encoder/config.json",
+        "bytes": 607
+      }
+    ],
+    "bytes": 7108524699
+  },
+  "qwen-1.7B": {
+    "id": "qwen-1.7B",
+    "name": "Qwen3 1.7B lyric assistant",
+    "repo": "Qwen/Qwen3-1.7B",
+    "revision": "70d244cc86ccca08cf5af4e1e306ecf908b1ad5e",
+    "core": false,
+    "files": [
+      {
+        "path": "config.json",
+        "bytes": 726
+      },
+      {
+        "path": "generation_config.json",
+        "bytes": 239
+      },
+      {
+        "path": "merges.txt",
+        "bytes": 1671853
+      },
+      {
+        "path": "model-00001-of-00002.safetensors",
+        "bytes": 3441185608
+      },
+      {
+        "path": "model-00002-of-00002.safetensors",
+        "bytes": 622329984
+      },
+      {
+        "path": "model.safetensors.index.json",
+        "bytes": 25605
+      },
+      {
+        "path": "tokenizer.json",
+        "bytes": 11422654
+      },
+      {
+        "path": "tokenizer_config.json",
+        "bytes": 9732
+      },
+      {
+        "path": "vocab.json",
+        "bytes": 2776833
+      }
+    ],
+    "bytes": 4079423234
+  },
+  "qwen-4B": {
+    "id": "qwen-4B",
+    "name": "Qwen3 4B lyric assistant",
+    "repo": "Qwen/Qwen3-4B",
+    "revision": "1cfa9a7208912126459214e8b04321603b3df60c",
+    "core": false,
+    "files": [
+      {
+        "path": "config.json",
+        "bytes": 726
+      },
+      {
+        "path": "generation_config.json",
+        "bytes": 239
+      },
+      {
+        "path": "merges.txt",
+        "bytes": 1671853
+      },
+      {
+        "path": "model-00001-of-00003.safetensors",
+        "bytes": 3957900840
+      },
+      {
+        "path": "model-00002-of-00003.safetensors",
+        "bytes": 3987450520
+      },
+      {
+        "path": "model-00003-of-00003.safetensors",
+        "bytes": 99630640
+      },
+      {
+        "path": "model.safetensors.index.json",
+        "bytes": 32819
+      },
+      {
+        "path": "tokenizer.json",
+        "bytes": 11422654
+      },
+      {
+        "path": "tokenizer_config.json",
+        "bytes": 9732
+      },
+      {
+        "path": "vocab.json",
+        "bytes": 2776833
+      }
+    ],
+    "bytes": 8060896856
+  },
+  "qwen-8B": {
+    "id": "qwen-8B",
+    "name": "Qwen3 8B lyric assistant",
+    "repo": "Qwen/Qwen3-8B",
+    "revision": "b968826d9c46dd6066d109eabc6255188de91218",
+    "core": false,
+    "files": [
+      {
+        "path": "config.json",
+        "bytes": 728
+      },
+      {
+        "path": "generation_config.json",
+        "bytes": 239
+      },
+      {
+        "path": "merges.txt",
+        "bytes": 1671853
+      },
+      {
+        "path": "model-00001-of-00005.safetensors",
+        "bytes": 3996250744
+      },
+      {
+        "path": "model-00002-of-00005.safetensors",
+        "bytes": 3993160032
+      },
+      {
+        "path": "model-00003-of-00005.safetensors",
+        "bytes": 3959604768
+      },
+      {
+        "path": "model-00004-of-00005.safetensors",
+        "bytes": 3187841392
+      },
+      {
+        "path": "model-00005-of-00005.safetensors",
+        "bytes": 1244659840
+      },
+      {
+        "path": "model.safetensors.index.json",
+        "bytes": 32878
+      },
+      {
+        "path": "tokenizer.json",
+        "bytes": 11422654
+      },
+      {
+        "path": "tokenizer_config.json",
+        "bytes": 9732
+      },
+      {
+        "path": "vocab.json",
+        "bytes": 2776833
+      }
+    ],
+    "bytes": 16397431693
+  },
+  "whisper": {
+    "id": "whisper",
+    "name": "Whisper lyric alignment",
+    "repo": "Systran/faster-whisper-large-v3",
+    "revision": "edaa852ec7e145841d8ffdb056a99866b5f0a478",
+    "core": false,
+    "files": [
+      {
+        "path": "config.json",
+        "bytes": 2394
+      },
+      {
+        "path": "model.bin",
+        "bytes": 3087284237
+      },
+      {
+        "path": "preprocessor_config.json",
+        "bytes": 340
+      },
+      {
+        "path": "tokenizer.json",
+        "bytes": 2480617
+      },
+      {
+        "path": "vocabulary.json",
+        "bytes": 1068114
+      }
+    ],
+    "bytes": 3090835702
+  },
+  "mert": {
+    "id": "mert",
+    "name": "MERT recording encoder",
+    "repo": "m-a-p/MERT-v2-FullSong",
+    "revision": "d8ba1c745e733b3908ce6ad16ebeb17ac7600a42",
+    "core": false,
+    "files": [
+      {
+        "path": "config.json",
+        "bytes": 882
+      },
+      {
+        "path": "configuration_mert2.py",
+        "bytes": 3860
+      },
+      {
+        "path": "marble_results.json",
+        "bytes": 8997
+      },
+      {
+        "path": "model.safetensors",
+        "bytes": 2529812848
+      },
+      {
+        "path": "modeling_mert2.py",
+        "bytes": 17081
+      },
+      {
+        "path": "preprocessor_config.json",
+        "bytes": 215
+      },
+      {
+        "path": "weights_manifest.json",
+        "bytes": 241
+      }
+    ],
+    "bytes": 2529844124
+  },
+  "realaudio-v4": {
+    "id": "realaudio-v4",
+    "name": "Mothersuperior real-audio tools",
+    "repo": "Mothersuperior/yue2-mothersuperior-realaudio-tokenizer-v4",
+    "revision": "f2278a2e005dc4ecc421c53a0929f62b3aeb2280",
+    "core": false,
+    "files": [
+      {
+        "path": "nar_lora_joint_v4.pt",
+        "bytes": 140626123,
+        "sha256": "df175dbf9405a8e15b2c3f8dbdcc97303575f763787f227b03029020e28102fe"
+      },
+      {
+        "path": "tokenizer_head_joint_v4.pt",
+        "bytes": 171305291,
+        "sha256": "d23c4f757a05f031134b8471ec84245ec2338966516e1a9e26a17ff300a5f87e"
+      }
+    ],
+    "bytes": 311931414
+  },
+  "demucs": {
+    "id": "demucs",
+    "name": "Demucs stem separation",
+    "core": false,
+    "repo": "facebookresearch/demucs",
+    "url": "https://dl.fbaipublicfiles.com/demucs/hybrid_transformer/955717e8-8726e21a.th",
+    "filename": "955717e8-8726e21a.th",
+    "sha256Prefix": "8726e21a",
+    "bytes": 84141911,
+    "sha256": "8726e21a993978c7ba086d3872e7608d7d5bfca646ca4aca459ffda844faa8b4"
+  },
+  "qwen-asr": {
+    "id": "qwen-asr",
+    "name": "Qwen3 song recognition \u00b7 1.7B",
+    "repo": "Qwen/Qwen3-ASR-1.7B",
+    "revision": "7278e1e70fe206f11671096ffdd38061171dd6e5",
+    "files": [
+      {
+        "path": "chat_template.json",
+        "bytes": 1161
+      },
+      {
+        "path": "config.json",
+        "bytes": 6194
+      },
+      {
+        "path": "generation_config.json",
+        "bytes": 142
+      },
+      {
+        "path": "merges.txt",
+        "bytes": 1671853
+      },
+      {
+        "path": "model-00001-of-00002.safetensors",
+        "bytes": 4220320824
+      },
+      {
+        "path": "model-00002-of-00002.safetensors",
+        "bytes": 478200688
+      },
+      {
+        "path": "model.safetensors.index.json",
+        "bytes": 64821
+      },
+      {
+        "path": "preprocessor_config.json",
+        "bytes": 330
+      },
+      {
+        "path": "tokenizer_config.json",
+        "bytes": 12487
+      },
+      {
+        "path": "vocab.json",
+        "bytes": 2776833
+      }
+    ],
+    "bytes": 4703055333,
+    "core": false
+  },
+  "qwen-aligner": {
+    "id": "qwen-aligner",
+    "name": "Qwen3 word alignment \u00b7 0.6B",
+    "repo": "Qwen/Qwen3-ForcedAligner-0.6B",
+    "revision": "c7cbfc2048c462b0d63a45797104fc9db3ad62b7",
+    "files": [
+      {
+        "path": "chat_template.json",
+        "bytes": 1161
+      },
+      {
+        "path": "config.json",
+        "bytes": 5982
+      },
+      {
+        "path": "generation_config.json",
+        "bytes": 115
+      },
+      {
+        "path": "merges.txt",
+        "bytes": 1671853
+      },
+      {
+        "path": "model.safetensors",
+        "bytes": 1835544544
+      },
+      {
+        "path": "preprocessor_config.json",
+        "bytes": 330
+      },
+      {
+        "path": "tokenizer_config.json",
+        "bytes": 12666
+      },
+      {
+        "path": "vocab.json",
+        "bytes": 2776833
+      }
+    ],
+    "bytes": 1840013484,
+    "core": false
+  },
+  "sortformer": {
+    "id": "sortformer",
+    "name": "Voice detection \u00b7 NVIDIA Sortformer 2.1",
+    "repo": "nvidia/diar_streaming_sortformer_4spk-v2.1",
+    "revision": "fafaab5faa1617a0ca52d38dd3dc4bd636800d3d",
+    "files": [
+      {
+        "path": "diar_streaming_sortformer_4spk-v2.1.nemo",
+        "bytes": 471367680,
+        "sha256": "8abd32832159c6ac1148c926b7276f35ba34582c444e559dce1f1253fea42ef8"
+      }
+    ],
+    "bytes": 471367680,
+    "core": false
+  },
+  "instrumental-v1": {
+    "id": "instrumental-v1",
+    "name": "Instrumental music \u00b7 Mothersuperior",
+    "repo": "Mothersuperior/YuE2-instrumental-cot-full-loras",
+    "revision": "947f2f4b28978b2b6c3e316e6a87925c76bf3c4b",
+    "core": false,
+    "files": [
+      {
+        "path": "ar_lora_inst_v3abc.bf16.safetensors",
+        "bytes": 139502088,
+        "sha256": "e408fd3148b75b1165f7ddbf63db575d83bb6402a0b5f876fcb767dbcb2c5414"
+      }
+    ],
+    "bytes": 139502088,
+    "license": "cc-by-nc-4.0"
+  },
+  "hum-v1": {
+    "id": "hum-v1",
+    "name": "Hum-to-Song \u00b7 Mothersuperior",
+    "repo": "Mothersuperior/YuE2-hum-to-song",
+    "revision": "cd323af53ebf61d613fb3d7717e7c8b9bb67f643",
+    "core": false,
+    "files": [
+      {
+        "path": "hum_adapter_v1_combined.safetensors",
+        "bytes": 421613360,
+        "sha256": "eeaf490b7045bb1215b3255f826dca551da8eb99d3d8e90311ce095e43b20b12"
+      }
+    ],
+    "bytes": 421613360,
+    "license": "cc-by-nc-4.0"
+  }
+}

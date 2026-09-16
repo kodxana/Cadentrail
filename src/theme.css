@@ -1,0 +1,36 @@
+/* Shared palette, including dialogs mounted outside App. */
+:root {
+  --experience-ink: #f4f1ed;
+  --experience-secondary: #c0c1c5;
+  --experience-muted: #a4a8b0;
+  --experience-line: #ffffff16;
+  --experience-surface: #ffffff06;
+  --experience-raised: #ffffff0b;
+  --experience-selected: #ffffff17;
+  --experience-solid: #242831;
+  --ui-background: #171b22;
+  --ui-editor: #1c2028;
+  --ui-inset: #191d25;
+  --ui-control: #30353f;
+  --ui-hover: #3b414c;
+  --ui-selection: #3b3e48;
+  --ui-border: #ffffff30;
+  --ui-grid: #343944;
+  --ui-primary: #e8e3db;
+  --ui-primary-hover: #fffaf1;
+  --ui-on-primary: #22252b;
+  --ui-focus: #ddd9cf80;
+  --ui-focus-ring: #ddd9cf16;
+  --ui-backdrop: #0a1019b8;
+  --ui-success: #99bfac;
+  --ui-warning: #edc49a;
+  --ui-danger: #f0aea1;
+  --ui-danger-surface: #3b292b;
+  --ui-danger-border: #80554e;
+  --accent: var(--ui-primary);
+  --muted: var(--experience-muted);
+  --line: var(--experience-line);
+  --border: var(--ui-border);
+  --panel: var(--experience-solid);
+  --track-color: #74cdb0;
+}

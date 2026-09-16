@@ -1,0 +1,45 @@
+name: Source checks
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: source-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  cpu:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '24'
+          cache: npm
+      - name: Install CPU development dependencies
+        run: |
+          python -m venv .venv
+          .venv/bin/python -m pip install -e ".[test]"
+          npm ci
+      - name: Source publication checks
+        run: |
+          .venv/bin/python -m scripts.changelog --check
+          .venv/bin/python -m scripts.check_source --tracked
+          .venv/bin/python -m scripts.package_release
+      - name: Backend and frontend regressions
+        run: |
+          .venv/bin/python -m pytest -q
+          npm test
+          npm run build
+      - name: Browser acceptance
+        run: |
+          npx playwright install --with-deps chromium
+          npm run test:browser

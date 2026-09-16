@@ -1,0 +1,98 @@
+{
+  "yue2": {
+    "id": "yue2",
+    "name": "YuE2 music engine",
+    "repo": "m-a-p/YuE2-3B",
+    "revision": "29b3558dd46954a0cd9021dc76d5c91864a0f1c7",
+    "core": true,
+    "files": [
+      {
+        "path": "LICENSE",
+        "bytes": 20309
+      },
+      {
+        "path": "THIRD_PARTY_NOTICES.md",
+        "bytes": 793
+      },
+      {
+        "path": "config.json",
+        "bytes": 959
+      },
+      {
+        "path": "generation_config.json",
+        "bytes": 204
+      },
+      {
+        "path": "licenses/SnakeBeta-NVIDIA-MIT.txt",
+        "bytes": 1076
+      },
+      {
+        "path": "licenses/stable-audio-tools-MIT.txt",
+        "bytes": 1069
+      },
+      {
+        "path": "model.safetensors",
+        "bytes": 7261441640
+      },
+      {
+        "path": "modeling_yue2.py",
+        "bytes": 32983
+      },
+      {
+        "path": "qwen.tiktoken",
+        "bytes": 2561218
+      },
+      {
+        "path": "weights_manifest.json",
+        "bytes": 179
+      },
+      {
+        "path": "yue2_generation_config.json",
+        "bytes": 466
+      }
+    ],
+    "bytes": 7264060896
+  },
+  "yue2-vae": {
+    "id": "yue2-vae",
+    "name": "YuE2 audio decoder",
+    "repo": "m-a-p/YuE2-Vae",
+    "revision": "9a94e1d0ea9f8087e98f77fa88df4a4068104d2a",
+    "core": true,
+    "files": [
+      {
+        "path": "LICENSE",
+        "bytes": 20309
+      },
+      {
+        "path": "THIRD_PARTY_NOTICES.md",
+        "bytes": 793
+      },
+      {
+        "path": "config.json",
+        "bytes": 1378
+      },
+      {
+        "path": "licenses/SnakeBeta-NVIDIA-MIT.txt",
+        "bytes": 1076
+      },
+      {
+        "path": "licenses/stable-audio-tools-MIT.txt",
+        "bytes": 1069
+      },
+      {
+        "path": "model.safetensors",
+        "bytes": 530512720
+      },
+      {
+        "path": "modeling_vae.py",
+        "bytes": 25265
+      },
+      {
+        "path": "weights_manifest.json",
+        "bytes": 178
+      }
+    ],
+    "bytes": 530562788
+  }
+}

@@ -1,0 +1,15 @@
+Cadentrail — A DAW for YuE2
+Copyright 2026 Madiator2011
+
+Cadentrail application code and original documentation are licensed under
+the Apache License, Version 2.0. See LICENSE.
+
+Created by Madiator2011. Built for Runpod.
+This is an independent project, not an official YuE2 or Runpod product.
+
+Third-party components and any adapted upstream material retain their own
+license terms. Model weights are not included in this source repository.
+Bundled Docker checkpoints and separately downloaded models are not
+relicensed by the application's Apache-2.0 license. See CREDITS.md,
+docs/THIRD-PARTY.md, docs/licenses/ and public/licenses/ for attribution
+and retained license texts.

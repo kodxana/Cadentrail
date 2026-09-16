@@ -1,0 +1,214 @@
+.changelog-toolbar {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  padding: 12px 24px;
+  border-bottom: 1px solid var(--experience-line);
+}
+.changelog-toolbar > button {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  flex-shrink: 0;
+}
+.changelog-toolbar .handbook-search {
+  min-width: 0;
+  flex: 1;
+}
+.changelog-toolbar input {
+  min-width: 0;
+}
+.changelog-filter {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--experience-secondary);
+  flex-shrink: 0;
+}
+.changelog-filter select,
+.changelog-mobile-version select {
+  min-height: 40px;
+  color: var(--experience-ink);
+  background: var(--experience-raised);
+  border: 1px solid var(--experience-line);
+  border-radius: 7px;
+  padding: 8px;
+}
+.changelog select option {
+  background: var(--experience-solid);
+}
+.changelog-layout {
+  display: grid;
+  grid-template-columns: 260px minmax(0, 1fr);
+  min-height: 0;
+}
+.changelog-versions {
+  overflow: auto;
+  border-right: 1px solid var(--experience-line);
+  padding: 12px;
+}
+.changelog-versions > p {
+  font-size: 11px;
+  color: var(--experience-muted);
+  margin: 4px 12px 12px;
+}
+.changelog-versions button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: 0;
+  padding: 14px 12px;
+  margin-bottom: 4px;
+  border-radius: 8px;
+}
+.changelog-versions button[aria-current] {
+  background: var(--experience-selected);
+}
+.changelog-versions button > span:first-child {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 7px;
+}
+.changelog-versions strong {
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+.changelog-versions small {
+  font-size: 10px;
+  color: var(--experience-secondary);
+  font-weight: 400;
+}
+.changelog-versions button > span:last-child {
+  display: block;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--experience-secondary);
+}
+.changelog-reading {
+  overflow: auto;
+  padding: 30px 38px 38px;
+  min-width: 0;
+  scrollbar-gutter: stable;
+}
+.changelog-reading h1 {
+  font-family: Manrope, sans-serif;
+  font-size: 28px;
+  line-height: 1.25;
+  letter-spacing: -0.8px;
+  margin: 12px 0 14px;
+}
+.changelog-summary {
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--experience-secondary);
+  margin-bottom: 30px;
+}
+.changelog-reading section {
+  padding: 18px 0;
+  border-top: 1px solid var(--experience-line);
+}
+.changelog-reading h2 {
+  font-size: 12px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin: 0 0 14px;
+  color: var(--experience-secondary);
+}
+.changelog-reading ul {
+  padding-left: 19px;
+  margin: 0;
+}
+.changelog-reading li {
+  font-size: 14px;
+  line-height: 1.8;
+  padding-left: 3px;
+  margin: 0 0 12px;
+}
+.changelog-reading footer {
+  margin-top: 24px;
+  border-top: 1px solid var(--experience-line);
+  padding-top: 18px;
+  font-size: 11px;
+  line-height: 1.7;
+  color: var(--experience-muted);
+}
+.changelog-empty p {
+  color: var(--experience-secondary);
+  line-height: 1.7;
+}
+.changelog-mobile-version {
+  display: none;
+}
+.handbook-releases-entry {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  flex-shrink: 0;
+  white-space: nowrap !important;
+}
+@media (max-width: 700px) {
+  .changelog-toolbar {
+    flex-wrap: wrap;
+    padding: 10px 16px;
+    gap: 10px;
+  }
+  .changelog-toolbar .handbook-search {
+    order: 3;
+    flex-basis: 100%;
+  }
+  .changelog-filter {
+    margin-left: auto;
+  }
+  .changelog-filter > span {
+    display: none;
+  }
+  .changelog-layout {
+    display: block;
+    overflow: hidden;
+  }
+  .changelog-versions {
+    display: none;
+  }
+  .changelog-reading {
+    height: 100%;
+    padding: 18px 20px 32px;
+    scrollbar-gutter: auto;
+  }
+  .changelog-reading h1 {
+    font-size: 25px;
+  }
+  .changelog-mobile-version {
+    display: grid;
+    gap: 8px;
+    margin-bottom: 25px;
+    color: var(--experience-secondary);
+    font-size: 11px;
+  }
+  .changelog-mobile-version select {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+  }
+  .changelog .handbook-header > div {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .changelog .handbook-version {
+    display: block;
+  }
+  .handbook:not(.changelog) .handbook-searchbar {
+    flex-wrap: wrap;
+  }
+  .handbook:not(.changelog) .handbook-searchbar .handbook-search {
+    order: 3;
+    flex-basis: 100%;
+  }
+  .handbook-releases-entry {
+    margin-left: auto;
+  }
+}

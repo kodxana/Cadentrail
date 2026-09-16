@@ -1,0 +1,61 @@
+# Dependencies and build output
+.venv/
+venv/
+node_modules/
+dist/
+build/
+*.egg-info/
+*.tsbuildinfo
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+htmlcov/
+coverage/
+playwright-report/
+test-results/
+
+# Workstation data, research and private release records
+.data/
+.runtime/
+.cache/
+vendor-research/
+models/
+exports/
+backups/
+*.sqlite*
+*.db
+*.log
+
+# Credentials and private environment files
+.env
+.env.*
+!.env.example
+*.env
+!*.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Generated release archives and local editor metadata
+cadentrail-*-source.zip*
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Local trailer attachments and generated audio/video
+/media/
+*.mp4
+*.mov
+*.webm
+*.mkv
+*.avi
+*.m4v
+*.wav
+*.flac
+*.mp3
+*.m4a
+*.aac
+*.ogg

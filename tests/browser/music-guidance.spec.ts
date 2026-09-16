@@ -1,0 +1,72 @@
+import { test, expect } from "@playwright/test";
+test.afterEach(async ({page}) => { await page.request.post("/api/_test/reset-signin"); });
+for (const width of [1440,390]) test(`instrumental and hum share saved project controls at ${width}px`, async ({page}) => {
+  await page.setViewportSize({width,height:900});
+  await page.addInitScript(() => { localStorage.setItem("cadentrail:profile",JSON.stringify({name:"",welcomed:true})); localStorage.setItem("studio:experience","create"); });
+  await page.request.post("/api/auth",{data:{password:"cadentrail-browser-test"}});
+  const p=await (await page.request.post("/api/_test/takes")).json();
+  const assets=await (await page.request.get(`/api/projects/${p.id}/assets`)).json();
+  await page.goto("/#"+p.id);
+  const steps=page.locator(".create-steps");
+  await steps.getByRole("button",{name:/Sound/}).click();
+  await page.locator(".hum-guidance > summary").click();
+  await expect(page.getByRole("button",{name:"Record hum",exact:true})).toBeVisible();
+  await page.getByRole("combobox",{name:"Hum recording",exact:true}).selectOption(assets[0].id);
+  await page.getByRole("spinbutton",{name:"Hum tempo",exact:true}).fill("98");
+  await expect.poll(async()=> (await (await page.request.get(`/api/projects/${p.id}`)).json()).generation.hum?.tempo).toBe(98);
+  await page.screenshot({path:`.runtime/046-hum-${width}.png`,animations:"disabled"});
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBeTruthy();
+  await steps.getByRole("button",{name:/Words/}).click();
+  await page.getByRole("button",{name:"Instrumental",exact:true}).click();
+  await expect(page.getByText("The trained instrumental adapter is selected automatically.",{exact:false})).toBeVisible();
+  await page.getByText("Shape the arrangement",{exact:false}).click();
+  await page.getByRole("button",{name:"+ intro",exact:true}).click();
+  await page.getByRole("button",{name:"+ outro",exact:true}).click();
+  await steps.getByRole("button",{name:/Performance/}).click();
+  await page.getByText("Advanced controls",{exact:false}).click();
+  await page.getByRole("combobox",{name:"Music engine",exact:true}).selectOption("base");
+  await expect.poll(async()=> (await (await page.request.get(`/api/projects/${p.id}`)).json()).generation.musicAdapter).toBe("base");
+  const saved=await (await page.request.get(`/api/projects/${p.id}`)).json();
+  expect(saved.generation.lyrics).toBe(p.generation.lyrics);
+  expect(saved.generation.hum.assetId).toBe(assets[0].id);
+  expect(saved.generation.instrumentalSections).toContain("[outro]");
+  await page.reload();
+  await page.locator(".create-steps").getByRole("button",{name:/Sound/}).click();
+  await expect(page.getByRole("combobox",{name:"Hum recording",exact:true})).toHaveValue(assets[0].id);
+  await page.getByRole("button",{name:"Detach",exact:true}).click();
+  await expect.poll(async()=> (await (await page.request.get(`/api/projects/${p.id}`)).json()).generation.hum).toBeNull();
+  expect((await (await page.request.get(`/api/projects/${p.id}/assets`)).json()).length).toBe(assets.length);
+});
+
+test("microphone recording saves real audio and releases its stream on navigation",async({page}) => {
+  await page.setViewportSize({width:390,height:900});
+  await page.addInitScript(() => {
+    localStorage.setItem("cadentrail:profile",JSON.stringify({name:"",welcomed:true})); localStorage.setItem("studio:experience","create");
+    (window as any).humStops=0;
+    Object.defineProperty(navigator.mediaDevices,"getUserMedia",{value:async()=>{
+      const context=new AudioContext();await context.resume();
+      const source=context.createOscillator(),destination=context.createMediaStreamDestination();source.frequency.value=220;source.connect(destination);source.start();
+      const track=destination.stream.getAudioTracks()[0],stop=track.stop.bind(track);
+      track.stop=()=>{(window as any).humStops++;stop();source.stop();void context.close();};
+      return destination.stream;
+    }});
+  });
+  await page.request.post("/api/auth",{data:{password:"cadentrail-browser-test"}});
+  const p=await(await page.request.post("/api/projects",{data:{name:"Microphone fixture"}})).json();
+  await page.goto("/#"+p.id);
+  await page.locator(".hum-guidance > summary").click();
+  await page.getByRole("button",{name:"Record hum",exact:true}).click();
+  await expect(page.getByRole("button",{name:"Stop recording",exact:true})).toBeVisible();
+  // A real MediaRecorder needs three seconds of frames for this source-region minimum.
+  await page.waitForTimeout(3500);
+  await page.getByRole("button",{name:"Stop recording",exact:true}).click();
+  await expect(page.getByRole("combobox",{name:"Hum recording",exact:true})).toBeVisible();
+  await expect.poll(()=>page.evaluate(()=>(window as any).humStops)).toBeGreaterThan(0);
+  const saved=await(await page.request.get(`/api/projects/${p.id}/assets`)).json();
+  expect(saved.length).toBe(1);expect(saved[0].duration).toBeGreaterThan(3);
+  const stops=await page.evaluate(()=>(window as any).humStops);
+  await page.getByRole("button",{name:"Record hum",exact:true}).click();
+  await expect(page.getByRole("button",{name:"Stop recording",exact:true})).toBeVisible();
+  await page.locator(".create-steps").getByRole("button",{name:/Words/}).click();
+  await expect.poll(()=>page.evaluate(()=>(window as any).humStops)).toBeGreaterThan(stops);
+});

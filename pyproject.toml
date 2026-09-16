@@ -1,0 +1,30 @@
+[project]
+name = "cadentrail"
+version = "0.4.11"
+description = "Cadentrail: an independent browser DAW for YuE2, built for Runpod"
+authors = [{name = "Madiator2011"}]
+readme = "README.md"
+license = "Apache-2.0"
+license-files = ["LICENSE", "NOTICE"]
+requires-python = ">=3.11,<3.14"
+dependencies = [
+  "fastapi>=0.115,<1", "uvicorn[standard]>=0.34,<1", "python-multipart>=0.0.20",
+  "numpy>=2,<3", "scipy>=1.15,<2", "soundfile>=0.13,<1", "pyloudnorm>=0.1.1,<1",
+  "mido>=1.3,<2", "music21>=9.7,<10", "pillow>=11,<13", "filelock>=3.18,<4",
+  "psutil>=7,<8", "imageio-ffmpeg>=0.6,<1", "httpx>=0.28,<1", "langdetect==1.0.9", "librosa==0.11.0"
+]
+[project.optional-dependencies]
+test = ["pytest>=8,<10"]
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["backend*"]
+
+[tool.setuptools.package-data]
+backend = ["*.json", "skills/*/*.md"]
