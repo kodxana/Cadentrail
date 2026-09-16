@@ -4,8 +4,6 @@
 
 https://github.com/user-attachments/assets/cdeb5724-8d6c-4d23-99d9-2b92bc044255
 
-[Watch or download the trailer](https://github.com/user-attachments/assets/cdeb5724-8d6c-4d23-99d9-2b92bc044255)
-
 Create songs, shape them in Studio, and enjoy your music — all in your browser.
 
 ## [Launch on Runpod →](https://console.runpod.io/hub/template/dlh907x9dx?ref=vfker49t)
