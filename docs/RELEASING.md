@@ -1,6 +1,6 @@
 # Building and releasing
 
-The current application version is **0.4.11**. Source-only documentation changes do not require rebuilding the Docker image.
+The current source version is **0.4.12**, prepared locally and not yet published. The documented Runpod image remains at 0.4.11 until a new image is built and verified. Source-only documentation changes do not require rebuilding the Docker image.
 
 ## Source package
 
@@ -41,7 +41,7 @@ After building, run CPU regressions against the actual image and verify bundled 
 1. Review the clean Git diff, license/notice coverage, changelog and source scan.
 2. Run the relevant source and extracted-archive checks.
 3. Create the public repository and enable private security reporting. Add the intended remote only after verifying the owner/name.
-4. Publish the source commit with tag v0.4.11 and the verified source archive/checksum. The tag should match the application version.
+4. Publish the source commit with tag v0.4.12 and the verified source archive/checksum. The tag should match the application version.
 5. If distributing a new container, push the exact tested image under an explicit version and record its registry digest. Do not overwrite an already published immutable version with a different image.
 6. Update template examples to the verified digest. Test startup, API access, persistent project preservation and frontend version on the target deployment.
 

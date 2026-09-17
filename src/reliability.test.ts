@@ -33,3 +33,11 @@ it("export preflight accounts for instrument routing and effect tails",()=>{
  expect(exportCapabilities(p).server.join(" ")).toContain("Instrument notes");expect(exportCapabilities(p).server.join(" ")).toContain("reverb");expect(exportCapabilities(p,false,10).totalDuration).toBe(18);
  expect(exportCapabilities(p,false,NaN).browser.length).toBeGreaterThan(0);
 });
+it("export preflight explains empty arrangements and empty loop ranges", () => {
+  const p = project();
+  expect(exportCapabilities(p).browser.join(" ")).toContain("Add audio or instrument notes");
+  p.tracks[0].clips[0].assetId = "audio";
+  expect(exportCapabilities(p).browser).toEqual([]);
+  p.loopStart = 20; p.loopEnd = 24;
+  expect(exportCapabilities(p, true).server.join(" ")).toContain("chosen range");
+});

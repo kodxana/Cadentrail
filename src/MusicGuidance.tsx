@@ -436,7 +436,7 @@ export function HumGuidance() {
           {p.generation.useScore && (
             <div className="generation-limit" role="note">
               Your edited Studio score is protected. Detach the hum or turn off
-              Use edited score before generating.
+              Use saved ABC for next take before generating.
             </div>
           )}
         </>

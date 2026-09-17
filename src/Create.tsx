@@ -1,3 +1,10 @@
+import { CandidateScoreDialog } from "./CandidateScoreDialog";
+import { ScoreUseControl } from "./ScoreUseControl";
+import {
+  generationFromCandidate,
+  generationInputIssue,
+} from "./generationInputs";
+import { ModelInputs } from "./ModelInputs";
 import { automaticVideoLyrics } from "./automaticVideoLyrics";
 import {
   HumGuidance,
@@ -70,6 +77,9 @@ export function Create() {
     p = s.project!,
     g = p.generation;
   const instrumental = instrumentalDirection(g);
+  const inputIssue = generationInputIssue(g);
+  const planIssue = generationInputIssue(g, "plan");
+  const [inspectedScore, setInspectedScore] = useState<Candidate | null>(null);
   const [blind, setBlind] = useState(false),
     [assistant, setAssistant] = useState<AssistanceAction | null>(null);
   const lyricsRef = useRef<HTMLTextAreaElement>(null);
@@ -144,6 +154,10 @@ export function Create() {
       throw new Error(
         "The project changed before this job started. Open it again to continue.",
       );
+    if (kind === "generate" || kind === "plan") {
+      const issue = generationInputIssue(latest.generation, kind);
+      if (issue) throw new Error(issue);
+    }
     const job = await post<Job>("/jobs", {
       projectId: p.id,
       kind,
@@ -195,15 +209,10 @@ export function Create() {
     setState({ view: "visuals", visualsTab: tab });
   };
   const branch = (c: Candidate, regenerate = false) => {
-    const source = c.metadata.generation as Generation | undefined;
     edit("Prepare a revised take", (p) => {
       p.creative.parentId = c.id;
-      if (source) p.generation = { ...p.generation, ...source };
+      p.generation = generationFromCandidate(p.generation, c);
       p.generation.seed = Math.floor(Math.random() * 2 ** 31);
-      if (c.abc) {
-        p.generation.abc = c.abc;
-        p.generation.useScore = true;
-      }
     });
     if (regenerate) void generate();
     else {
@@ -552,6 +561,7 @@ export function Create() {
                   ))}
                 </div>
               </div>
+              <ModelInputs />
               <details className="advanced-generation">
                 <summary>
                   Advanced controls <ChevronDown size={14} />
@@ -563,9 +573,9 @@ export function Create() {
                     this take.
                   </p>
                 )}
-                {g.useScore && (
+                {g.useScore && !inputIssue && (
                   <div className="custom-state">
-                    Using your edited Studio score.{" "}
+                    Using the saved ABC reference.{" "}
                     <button onClick={() => setState({ view: "notation" })}>
                       Open score
                     </button>
@@ -626,7 +636,7 @@ export function Create() {
                       onChange={(e) => {
                         if (e.target.value === "off" && g.useScore) {
                           notice(
-                            "Uncheck the edited score before choosing direct generation.",
+                            "Turn off Use saved ABC for next take before choosing direct generation.",
                           );
                           return;
                         }
@@ -710,25 +720,16 @@ export function Create() {
                     />
                   </label>
                 </div>
-                <label className="checkbox">
-                  <input
-                    type="checkbox"
-                    checked={g.useScore}
-                    disabled={!g.abc || g.cot === "off"}
-                    onChange={(e) =>
-                      edit("Use edited score", (p) => {
-                        p.generation.useScore = e.target.checked;
-                      })
-                    }
-                  />
-                  Use edited Studio score
-                </label>
+                <ScoreUseControl />
                 <button
-                  disabled={!s.status.available || !g.style.trim()}
+                  disabled={
+                    !s.status.available || !g.style.trim() || !!planIssue
+                  }
                   onClick={() => void queue("plan").catch(report)}
                 >
-                  Plan score only
+                  {g.useScore ? "Prepare saved score only" : "Plan score only"}
                 </button>
+                {planIssue && <p className="help">{planIssue}</p>}
                 <p className="help">
                   Rendering presets use 16 / 32 / 48 / 64 synthesis steps.
                   Sampling settings affect variation; they cannot guarantee
@@ -800,7 +801,12 @@ export function Create() {
             <div className="guide-forward">
               <button
                 className="primary generate-song"
-                disabled={submitting || !s.status.available || !g.style.trim()}
+                disabled={
+                  submitting ||
+                  !s.status.available ||
+                  !g.style.trim() ||
+                  !!inputIssue
+                }
                 onClick={() => void generate()}
               >
                 <Music2 size={18} />
@@ -815,12 +821,14 @@ export function Create() {
                   </>
                 )}
               </button>
-              <small>
-                {!g.style.trim()
-                  ? "Add a music description in Sound first."
-                  : s.status.available
-                    ? "YuE2 · saved as new takes · optional downloads ask first"
-                    : "Open the Runpod workstation to generate"}
+              <small role={inputIssue ? "status" : undefined}>
+                {inputIssue
+                  ? inputIssue
+                  : !g.style.trim()
+                    ? "Add a music description in Sound first."
+                    : s.status.available
+                      ? "YuE2 · new complete takes · does not render your Studio mix"
+                      : "Open the Runpod workstation to generate"}
               </small>
             </div>
           ) : (
@@ -830,6 +838,12 @@ export function Create() {
           )}
         </div>
       </section>
+      {inspectedScore && (
+        <CandidateScoreDialog
+          candidate={inspectedScore}
+          close={() => setInspectedScore(null)}
+        />
+      )}
       {assistant && (
         <div className="guide-writer" hidden={step >= 2}>
           <LyricAssistant
@@ -1044,13 +1058,7 @@ export function Create() {
                           {c.abc && (
                             <button
                               onClick={() => {
-                                edit("Inspect candidate score", (p) => {
-                                  p.generation.abc = c.abc;
-                                  p.generation.useScore = true;
-                                  if (p.generation.cot === "off")
-                                    p.generation.cot = "full";
-                                });
-                                setState({ view: "notation" });
+                                setInspectedScore(c);
                               }}
                             >
                               Inspect score

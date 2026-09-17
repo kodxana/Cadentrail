@@ -19,6 +19,14 @@ export function exportCapabilities(
   const duration = (end - start) / bps;
   const browser: string[] = [],
     server: string[] = [];
+  const hasContent = project.tracks.some((t) => t.clips.some((c) =>
+    (c.assetId || c.notes.length) && c.beat < end && c.beat + c.duration > start,
+  ));
+  if (!hasContent) {
+    const message = "Add audio or instrument notes to the Studio timeline in the chosen range before rendering.";
+    browser.push(message);
+    server.push(message);
+  }
   if (!Number.isFinite(tailSeconds) || tailSeconds < 0 || tailSeconds > 30) {
     browser.push("Choose an effect tail between 0 and 30 seconds.");
     server.push("Choose an effect tail between 0 and 30 seconds.");

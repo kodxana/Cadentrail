@@ -3,8 +3,20 @@ import {
   errorStatus,
   staleAuthenticationError,
 } from "./authErrors";
-import { persistDraft, recoveryDrafts, removeDraft, clearOwnDraft, type RecoveryDraft } from "./recovery";
+import {
+  persistDraft,
+  recoveryDrafts,
+  removeDraft,
+  clearOwnDraft,
+  type RecoveryDraft,
+} from "./recovery";
 import { splitClip } from "./editing";
+import {
+  canUseMidiTiming,
+  importedMidiTracks,
+  type MidiImportResult,
+  type PendingMidi,
+} from "./midiImport";
 import { mergeChanges } from "./merge";
 import { measured } from "./performance";
 import { useSyncExternalStore } from "react";
@@ -31,6 +43,7 @@ import {
 enablePatches();
 type Command = { label: string; forward: Patch[]; inverse: Patch[] };
 type State = {
+  pendingMidi: PendingMidi | null;
   listening: boolean;
   radio: boolean;
   project: Project | null;
@@ -71,7 +84,14 @@ type State = {
   busy: string | null;
 };
 let state: State = {
-  radio: (()=>{try{return localStorage.getItem("cadentrail:mode")==="radio";}catch{return false;}})(),
+  pendingMidi: null,
+  radio: (() => {
+    try {
+      return localStorage.getItem("cadentrail:mode") === "radio";
+    } catch {
+      return false;
+    }
+  })(),
   listening: (() => {
     try {
       return localStorage.getItem("cadentrail:mode") === "listen";
@@ -120,6 +140,14 @@ const clipBoard: { clips: { clip: Clip; trackId: string }[]; notes: Note[] } = {
 };
 export const getState = () => state;
 export function setState(next: Partial<State>) {
+  if ("project" in next && next.project?.id !== state.project?.id)
+    next = {
+      ...next,
+      pendingMidi:
+        next.pendingMidi?.projectId === next.project?.id
+          ? (next.pendingMidi ?? null)
+          : null,
+    };
   if (next.listening !== undefined && next.radio === undefined)
     next = { ...next, radio: false };
   if (next.listening !== undefined || next.radio !== undefined) {
@@ -267,9 +295,22 @@ export async function save() {
         if ((e as { status?: number }).status !== 409 || !base) throw e;
         const server = await api<Project>("/projects/" + snapshot.id);
         let merged: Project;
-        try { merged = mergeChanges(base, snapshot, server); }
-        catch (conflict) {
-          setState({ recovery: { draft: {key:"", project:state.project?.id===snapshot.id?state.project:snapshot, base, savedAt:Date.now()}, server, conflict:true } });
+        try {
+          merged = mergeChanges(base, snapshot, server);
+        } catch (conflict) {
+          setState({
+            recovery: {
+              draft: {
+                key: "",
+                project:
+                  state.project?.id === snapshot.id ? state.project : snapshot,
+                base,
+                savedAt: Date.now(),
+              },
+              server,
+              conflict: true,
+            },
+          });
           throw conflict;
         }
         saved = await api<Project>("/projects/" + snapshot.id, {
@@ -282,9 +323,25 @@ export async function save() {
         const same = state.project === snapshot;
         let current = saved;
         if (!same) {
-          try { current = {...mergeChanges(snapshot, state.project, saved), revision:saved.revision, updatedAt:saved.updatedAt}; }
-          catch (conflict) {
-            setState({recovery:{draft:{key:"",project:state.project,base:snapshot,savedAt:Date.now()},server:saved,conflict:true}});
+          try {
+            current = {
+              ...mergeChanges(snapshot, state.project, saved),
+              revision: saved.revision,
+              updatedAt: saved.updatedAt,
+            };
+          } catch (conflict) {
+            setState({
+              recovery: {
+                draft: {
+                  key: "",
+                  project: state.project,
+                  base: snapshot,
+                  savedAt: Date.now(),
+                },
+                server: saved,
+                conflict: true,
+              },
+            });
             throw conflict;
           }
         }
@@ -293,8 +350,13 @@ export async function save() {
           dirty: !same,
           saveState: same ? "Saved" : "Unsaved",
         });
-        if (same) { clearOwnDraft(snapshot.id); setState({recoveryError:null}); }
-        else { protectUnsavedEdits(); timer = setTimeout(() => void save(), 800); }
+        if (same) {
+          clearOwnDraft(snapshot.id);
+          setState({ recoveryError: null });
+        } else {
+          protectUnsavedEdits();
+          timer = setTimeout(() => void save(), 800);
+        }
       }
     } catch (e) {
       setState({ saveState: "Save failed" });
@@ -326,10 +388,17 @@ export async function openProject(projectId: string) {
         "The current project changed while opening. Save it before switching sessions.",
       );
     base = project;
-    const content = (p:Project) => { const {revision,updatedAt,...rest}=p;return JSON.stringify(rest); };
-    const drafts = recoveryDrafts(project.id).filter(d => content(d.project) !== content(project));
+    const content = (p: Project) => {
+      const { revision, updatedAt, ...rest } = p;
+      return JSON.stringify(rest);
+    };
+    const drafts = recoveryDrafts(project.id).filter(
+      (d) => content(d.project) !== content(project),
+    );
     setState({
-      recovery: drafts[0] ? {draft:drafts[0],server:project,conflict:false} : null,
+      recovery: drafts[0]
+        ? { draft: drafts[0], server: project, conflict: false }
+        : null,
       project,
       assets,
       view:
@@ -356,13 +425,35 @@ export async function openProject(projectId: string) {
     if (request === openRequest) report(e);
   }
 }
-export function resolveRecovery(choices: Record<string, "local" | "remote">, useServer = false) {
+export function resolveRecovery(
+  choices: Record<string, "local" | "remote">,
+  useServer = false,
+) {
   const recovery = state.recovery;
   if (!recovery || state.project?.id !== recovery.server.id) return;
-  const {draft, server} = recovery;
-  const recovered = useServer ? server : mergeChanges(draft.base || server, draft.project, server, "project", (path, _b, l, r) => choices[path] === "remote" ? r : l);
+  const { draft, server } = recovery;
+  const recovered = useServer
+    ? server
+    : mergeChanges(
+        draft.base || server,
+        draft.project,
+        server,
+        "project",
+        (path, _b, l, r) => (choices[path] === "remote" ? r : l),
+      );
   base = server;
-  setState({project:{...recovered,revision:server.revision,updatedAt:server.updatedAt}, recovery:null, undo:[],redo:[],error:null,errorStatus:null});
+  setState({
+    project: {
+      ...recovered,
+      revision: server.revision,
+      updatedAt: server.updatedAt,
+    },
+    recovery: null,
+    undo: [],
+    redo: [],
+    error: null,
+    errorStatus: null,
+  });
   if (!useServer) {
     changed();
     // Only discard the old entry after the selected edits have another durable recovery copy.
@@ -370,7 +461,7 @@ export function resolveRecovery(choices: Record<string, "local" | "remote">, use
   } else {
     if (draft.key) removeDraft(draft.key);
     clearOwnDraft(server.id);
-    setState({dirty:false,saveState:"Saved",recoveryError:null});
+    setState({ dirty: false, saveState: "Saved", recoveryError: null });
   }
 }
 
@@ -444,6 +535,31 @@ export function deleteSelected(mode: "clips" | "notes" = "clips") {
     });
     setState({ selectedClips: [] });
   }
+}
+export function deleteTrack(trackId: string) {
+  const tracks = state.project?.tracks;
+  const index = tracks?.findIndex((t) => t.id === trackId) ?? -1;
+  if (!tracks || index < 0) return;
+  const track = tracks[index];
+  const clips = new Set(track.clips.map((c) => c.id));
+  const notes = new Set(track.clips.flatMap((c) => c.notes.map((n) => n.id)));
+  edit("Delete track", (p) => {
+    p.tracks = p.tracks.filter((t) => t.id !== trackId);
+    // Keep child tracks connected when removing a group bus.
+    for (const t of p.tracks) if (t.output === trackId) t.output = track.output;
+  });
+  const remaining = state.project!.tracks;
+  setState({
+    selectedTrack:
+      state.selectedTrack === trackId
+        ? (remaining[Math.min(index, remaining.length - 1)]?.id ?? null)
+        : state.selectedTrack,
+    selectedClips: state.selectedClips.filter((id) => !clips.has(id)),
+    selectedNotes: state.selectedNotes.filter((id) => !notes.has(id)),
+  });
+  notice(
+    `Deleted track “${track.name}”. Undo restores it; source audio is kept.`,
+  );
 }
 export function copy(mode: "clips" | "notes") {
   if (mode === "notes")
@@ -538,6 +654,7 @@ export function split() {
 export async function importFile(file: File) {
   const p = state.project;
   if (!p) return;
+  const cursor = state.cursor;
   setState({ busy: "Importing " + file.name });
   try {
     if (/\.zip$/i.test(file.name)) {
@@ -547,36 +664,19 @@ export async function importFile(file: File) {
       );
       await openProject(restored.id);
     } else if (/\.mid(i)?$/i.test(file.name)) {
-      const result = await fileApi<{
-        tracks: { name: string; notes: Note[] }[];
-        warnings: string[];
-      }>("/midi/import", file);
-      edit("Import MIDI", (p) => {
-        for (const t of result.tracks)
-          p.tracks.push(
-            newTrack({
-              type: "midi",
-              name: t.name,
-              clips: [
-                newClip({
-                  name: file.name,
-                  beat: state.cursor,
-                  duration: Math.max(
-                    4,
-                    ...t.notes.map((n) => n.beat + n.duration),
-                  ),
-                  notes: t.notes,
-                }),
-              ],
-            }),
-          );
+      const result = await fileApi<MidiImportResult>("/midi/import", file);
+      if (state.project?.id !== p.id) return;
+      if (!result.tracks.length)
+        throw new Error("This MIDI file has no notes to import.");
+      setState({
+        pendingMidi: { projectId: p.id, fileName: file.name, cursor, result },
       });
-      notice(result.warnings.join(" "));
     } else if (/\.abc$/i.test(file.name)) {
       const abc = await file.text();
       edit("Import score", (p) => {
         p.generation.abc = abc;
         p.generation.useScore = true;
+        if (p.generation.cot === "off") p.generation.cot = "full";
       });
       setState({ view: "score" });
     } else {
@@ -589,6 +689,36 @@ export async function importFile(file: File) {
   } finally {
     setState({ busy: null });
   }
+}
+export function confirmMidiImport(useFileTiming: boolean) {
+  const pending = state.pendingMidi,
+    project = state.project;
+  if (!pending || !project || pending.projectId !== project.id) return;
+  if (useFileTiming && !canUseMidiTiming(pending.result))
+    throw new Error(
+      "This file's opening tempo or meter is outside Studio's supported range.",
+    );
+  if (project.tracks.length + pending.result.tracks.length > 256)
+    throw new Error("Import would exceed the project's 256-track limit.");
+  const tracks = importedMidiTracks(pending, project.tracks.length);
+  edit("Import MIDI", (p) => {
+    p.tracks.push(...tracks);
+    if (useFileTiming) {
+      p.tempo = pending.result.tempo;
+      p.timeSignature = pending.result.timeSignature;
+    }
+  });
+  const selected = tracks.find((t) => t.instrument !== "drums") ?? tracks[0];
+  setState({
+    pendingMidi: null,
+    selectedTrack: selected.id,
+    selectedClips: [selected.clips[0].id],
+    selectedNotes: [],
+    view: "score",
+  });
+  notice(
+    `Imported ${tracks.length} MIDI parts. Choose a melody reference to guide a new YuE2 take.`,
+  );
 }
 export function placeAsset(asset: Asset) {
   const c = newClip({

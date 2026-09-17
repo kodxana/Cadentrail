@@ -102,25 +102,68 @@ def write_abc(notes, chords, tempo=120, signature=(4, 4), title="Composition"):
 
 def read_midi(data):
     midi = mido.MidiFile(file=io.BytesIO(data))
-    tracks, tempo = [], 120.
-    for track in midi.tracks:
-        tick, active, notes, name = 0, {}, [], "MIDI"
+    if midi.type == 2:
+        raise ValueError("MIDI type 2 contains independent sequences. Export a synchronized type 0 or 1 file first.")
+    if midi.ticks_per_beat <= 0:
+        raise ValueError("SMPTE MIDI timing is not supported. Export with ticks per quarter note.")
+    families = ("Piano", "Chromatic percussion", "Organ", "Guitar", "Bass", "Strings", "Ensemble", "Brass", "Reed", "Pipe", "Synth lead", "Synth pad", "Synth effects", "World", "Percussive", "Sound effects")
+    tracks, tempos, meters = [], [], []
+    controllers, programs_changed, unfinished = False, False, False
+    for index, track in enumerate(midi.tracks):
+        tick, active, parts, name = 0, {}, {}, ""
+        programs = {}
+        def part(channel):
+            return parts.setdefault(channel, {"notes": [], "program": programs.get(channel, 0)})
+        def finish(channel, pitch, start, end, velocity):
+            part(channel)["notes"].append(Note(beat=start/midi.ticks_per_beat, duration=max(1, end-start)/midi.ticks_per_beat, pitch=pitch, velocity=velocity, channel=channel).model_dump())
         for event in track:
             tick += event.time
             if event.type == "track_name":
                 name = event.name
             elif event.type == "set_tempo":
-                tempo = mido.tempo2bpm(event.tempo)
+                tempos.append((tick, event.tempo))
+            elif event.type == "time_signature":
+                meters.append((tick, event.numerator, event.denominator))
+            elif event.type == "program_change":
+                if event.channel in parts and event.program != parts[event.channel]["program"]:
+                    programs_changed = True
+                programs[event.channel] = event.program
+            elif event.type in ("control_change", "pitchwheel", "aftertouch", "polytouch"):
+                controllers = True
             elif event.type == "note_on" and event.velocity > 0:
+                part(event.channel)
                 active.setdefault((event.channel, event.note), []).append((tick, event.velocity))
             elif event.type in ("note_off", "note_on"):
                 pending = active.get((event.channel, event.note), [])
                 if pending:
                     start, velocity = pending.pop(0)
-                    notes.append(Note(beat=start/midi.ticks_per_beat, duration=max(1, tick-start)/midi.ticks_per_beat, pitch=event.note, velocity=velocity, channel=event.channel).model_dump())
-        if notes:
-            tracks.append({"name": name, "notes": notes})
-    return {"tracks": tracks, "tempo": tempo, "warnings": ["Tempo maps, sustain pedals and controller events are not imported; note timing uses quarter beats"]}
+                    finish(event.channel, event.note, start, tick, velocity)
+        for (channel, pitch), pending in active.items():
+            for start, velocity in pending:
+                unfinished = True
+                finish(channel, pitch, start, tick, velocity)
+        for channel, info in sorted(parts.items()):
+            program, notes = info["program"], info["notes"]
+            if not notes:
+                continue
+            percussion = channel == 9
+            patch = "Drum kit" if percussion else f"{families[program // 8]} (GM {program + 1})"
+            preview = "drums" if percussion else "bass" if 32 <= program <= 39 else "pad" if 48 <= program <= 55 or 88 <= program <= 103 else "poly" if 80 <= program <= 87 else "piano"
+            tracks.append({"name": f"{(name or f'Track {index+1}')[:110]} · Ch {channel+1} · {patch}", "notes": sorted(notes, key=lambda n: (n["beat"], n["pitch"])), "channel": channel, "program": program, "instrument": preview})
+    tempo = next((value for tick, value in reversed(sorted(tempos, key=lambda event: event[0])) if tick == 0), 500000)
+    signature = next(([n, d] for tick, n, d in reversed(sorted(meters, key=lambda event: event[0])) if tick == 0), [4, 4])
+    warnings = ["Studio uses simple preview instruments, not the file's original General MIDI sound bank."]
+    if any(tick > 0 and value != tempo for tick, value in tempos):
+        warnings.append("Tempo changes are not imported. Notes keep their quarter-beat positions at one project tempo.")
+    if any(tick > 0 and [n, d] != signature for tick, n, d in meters):
+        warnings.append("Time-signature changes are not imported; only the opening meter is available.")
+    if controllers:
+        warnings.append("Sustain, expression, pitch bends and other controller events are not imported.")
+    if programs_changed:
+        warnings.append("Instrument changes within a part are not reproduced by Studio preview instruments.")
+    if unfinished:
+        warnings.append("Notes without a note-off end at their source track's final event.")
+    return {"tracks": tracks, "tempo": mido.tempo2bpm(tempo), "timeSignature": signature, "warnings": warnings}
 
 
 def write_midi(notes, tempo=120, signature=(4, 4)):

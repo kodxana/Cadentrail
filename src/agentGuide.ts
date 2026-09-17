@@ -90,6 +90,6 @@ export function agentTaskBrief(
       ? ["", "My direction:", state.request.trim()]
       : []),
     "",
-    "Optional model downloads require my approval of their names and sizes. Song duration and voice casting are model-guided, not guaranteed. Poll accepted jobs and report their actual results.",
+    "Optional model downloads require my approval of their names and sizes. YuE2 creates complete takes; per-track AI instrument rendering is unavailable. MIDI requires explicit ABC guidance and is not an exact performance guarantee. Song duration and voice casting are model-guided, not guaranteed. Poll accepted jobs and report their actual results.",
   ].join("\n");
 }

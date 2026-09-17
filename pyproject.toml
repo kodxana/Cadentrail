@@ -1,6 +1,6 @@
 [project]
 name = "cadentrail"
-version = "0.4.11"
+version = "0.4.12"
 description = "Cadentrail: an independent browser DAW for YuE2, built for Runpod"
 authors = [{name = "Madiator2011"}]
 readme = "README.md"

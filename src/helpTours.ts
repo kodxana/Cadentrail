@@ -84,7 +84,7 @@ export const tours: Record<TourId, { title: string; steps: TourStep[] }> = {
       },
       {
         title: "Your next step is yours",
-        text: "The project toolbar holds Queue, Files, version history and Export. Create, Studio and Visuals share the same project. Closing this tour returns you to the creation step you were using.",
+        text: "The project toolbar holds Queue, Files, version history and Render audio. Create, Studio and Visuals share the same project. Closing this tour returns you to the creation step you were using.",
         target: '[data-help="project-actions"]',
         article: "files",
         createStep: 3,
@@ -130,9 +130,9 @@ export const tours: Record<TourId, { title: string; steps: TourStep[] }> = {
         studioView: "mix",
       },
       {
-        title: "Check, then export",
-        text: "Analyze helps inspect the audio. Export offers the supported browser or server renderer and reports compatibility issues. Your original generation, edited mix and master remain separate versions.",
-        target: ".studio-main",
+        title: "Turn your arrangement into audio",
+        text: "Click Render audio in the project toolbar, choose WAV, FLAC or MP3, then Render and download. The default browser renderer combines your arranged tracks, instruments and effects into one audio file. Keep the tab open until it downloads.",
+        target: ".export-button",
         article: "export",
         studioView: "analyze",
       },

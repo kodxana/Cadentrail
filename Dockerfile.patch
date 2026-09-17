@@ -44,7 +44,7 @@ ENV PATH=/usr/local/bin:/usr/local/sbin:/usr/sbin:/usr/bin:/sbin:/bin LANG=C.UTF
     NVIDIA_DRIVER_CAPABILITIES=compute,utility \
     DAW_CORE_MODELS=/opt/cadentrail/core-models DAW_BUNDLED_TOOLS=/opt/cadentrail/bundled-tools
 WORKDIR /app
-LABEL org.opencontainers.image.version="0.4.11" \
+LABEL org.opencontainers.image.version="0.4.12" \
       org.opencontainers.image.title="Cadentrail — A DAW for YuE2" \
       org.opencontainers.image.description="Independent browser DAW for YuE2, created by Madiator2011 and built for Runpod" \
       org.opencontainers.image.authors="Madiator2011"

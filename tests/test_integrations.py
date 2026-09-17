@@ -292,3 +292,30 @@ def test_reconnect_kit_keeps_identity_across_restart_without_credentials(worksta
     assert c.get('/api/integrations/runpod/reconnect.zip',headers={'Authorization':'Bearer invalid'}).status_code==401
     c.cookies.clear()
     assert c.get('/api/integrations/runpod/reconnect.zip').status_code==401
+
+
+def test_agents_receive_the_real_generation_boundary_and_invalid_scores_do_not_queue(workstation):
+    app, client = workstation
+    agent = token(client, ['read', 'projects:write', 'generation:run'])
+    data = call(client, agent, 'get_capabilities')['structuredContent']['data']
+    assert data['music']['generationOutput'] == 'complete-stereo-take'
+    assert data['music']['independentInstrumentGeneration'] is False
+    assert data['music']['arrangementControlsGeneration'] is False
+    assert data['music']['exactMidiReproductionGuaranteed'] is False
+    assert 'ABC' in data['music']['midiReference']
+    project = client.post('/api/projects', json={'name': 'Reference validation'}).json()
+    for kind in ('generate', 'plan'):
+        for abc, cot in (('', 'full'), ('X:1\nK:C\nC D', 'off')):
+            g = {**project['generation'], 'style': 'Jazz', 'abc': abc, 'cot': cot, 'useScore': True}
+            response = client.post('/api/jobs', headers=bearer(agent), json={'kind': kind, 'projectId': project['id'], 'generation': g})
+            assert response.status_code == 422, response.text
+            assert 'nonempty ABC' in response.text
+    assert app.state.store.jobs() == []
+
+
+def test_direct_generation_does_not_queue_a_score_only_job(workstation):
+    app, client = workstation
+    p = client.post('/api/projects', json={'name': 'Direct generation'}).json()
+    response = client.post('/api/jobs', json={'kind': 'plan', 'projectId': p['id'], 'generation': {**p['generation'], 'style': 'Jazz', 'cot': 'off', 'useScore': False}})
+    assert response.status_code == 422 and 'Score planning is off' in response.text
+    assert app.state.store.jobs() == []

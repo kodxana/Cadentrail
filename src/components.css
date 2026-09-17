@@ -930,6 +930,16 @@ dialog::backdrop {
 .project-open-icon { transform: rotate(-90deg); }
 .project-empty { padding: 20px 10px; line-height: 1.6; }
 .project-switcher-error { color: var(--ui-warning); }
+.browser-track-row { display: flex; align-items: center; margin: 1px 7px; min-width: 0; }
+.browser-track-row .browser-track { flex: 1; min-width: 0; margin: 0; }
+.browser-track-actions { flex-shrink: 0; background: transparent; padding: 7px; }
+.studio-context-menu { z-index: 100; color: var(--experience-ink); }
+.studio-context-menu button { min-height: 36px; gap: 8px; }
+.studio-menu-title { padding: 7px 9px; font-size: 11px; color: var(--experience-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.export-project-files summary { cursor: pointer; padding: 8px 0; }
+@media (pointer: coarse) {
+  .browser-track-actions, .studio-context-menu button { min-height: 44px; }
+}
 @media (max-width: 600px) {
   .app .project-toolbar { height: 48px; min-height: 48px; }
   .project-navigation > button { min-height: 40px; padding: 6px 8px; }
@@ -938,3 +948,31 @@ dialog::backdrop {
   .project-current { font-size: 0; }
   .project-switcher-tools button { min-height: 40px; }
 }
+
+/* MIDI review and model guidance use the shared workstation surfaces. */
+.model-inputs {flex: 0 0 auto; border-bottom: 1px solid var(--line); background: var(--experience-surface); font-size: 12px;}
+.model-inputs summary {padding: 9px 14px; cursor: pointer; color: var(--experience-ink);}
+.model-inputs summary span {color: var(--experience-muted);}
+.model-inputs > div {padding: 0 14px 12px; max-height: 35dvh; overflow: auto;}
+.model-inputs p {margin: 7px 0; max-width: 950px; line-height: 1.55; color: var(--experience-secondary);}
+.midi-import-dialog, .score-reference-dialog {width: 620px;}
+.reference-filename {overflow-wrap: anywhere;}
+.reference-fields {display: grid; grid-template-columns: 1fr 1fr; gap: 14px;}
+.reference-fields .field, .score-reference-dialog select, .midi-import-dialog select {min-width: 0; width: 100%;}
+.reference-actions {display: flex; justify-content: flex-end; gap: 8px; margin-top: 20px;}
+.modal .reference-warning {color: var(--ui-warning);}
+.midi-parts {list-style: none; padding: 0; max-height: 180px; overflow: auto;}
+.midi-parts li {display: flex; gap: 12px; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--line);}
+.midi-parts small {white-space: nowrap; color: var(--muted);}
+.piano-clip-choice {min-width: 80px; max-width: 270px; flex: 1; text-overflow: ellipsis;}
+@media (max-width: 600px) {
+  .reference-fields {grid-template-columns: 1fr;}
+  .piano > .toolbar {flex-wrap: wrap;}
+  .piano-clip-choice {max-width: 100%; flex-basis: 100%;}
+  .reference-actions {flex-wrap: wrap;}
+}
+
+.candidate-score-dialog {width: 720px;}
+.candidate-score-dialog .abc-source {height: 30dvh; min-height: 120px; width: 100%; resize: vertical;}
+.score-use-control {margin: 10px 0;}
+.model-inputs .reference-warning {color: var(--ui-warning);}

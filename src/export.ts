@@ -1,7 +1,7 @@
 import { exportCapabilities } from "./exportCapabilities";
 import { type Project, type Note, type Asset, endBeat, clamp } from "./model";
 import { engine, makeGraph, instrument, automationValue } from "./audio";
-import { getState, setState, report } from "./store";
+import { getState, setState, report, notice } from "./store";
 import { api } from "./api";
 import { audibleTracks } from "./routing";
 function wav(buffer: AudioBuffer) {
@@ -197,9 +197,10 @@ export async function browserRender(options: {
     );
     if (options.saveToProject) return result.asset;
     const a = document.createElement("a");
-    a.href = "/api/exports/" + result.filename;
     a.download = p.name + "." + options.format;
+    a.href = "/api/exports/" + result.filename + "?download_name=" + encodeURIComponent(a.download);
     a.click();
+    notice("Audio rendered. Your download is ready: " + a.download);
   } finally {
     disposeGraph?.();
     setState({ busy: null });

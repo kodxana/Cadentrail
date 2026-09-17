@@ -5,13 +5,14 @@ import hmac
 import io
 import json
 import os
+import re
 import secrets
 import shutil
 import time
 import zipfile
 from urllib.parse import urlsplit
 from pathlib import Path
-from fastapi import FastAPI, HTTPException, Request, UploadFile, File, Form, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, HTTPException, Request, UploadFile, File, Form, Query, WebSocket, WebSocketDisconnect
 from fastapi.responses import FileResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
@@ -380,13 +381,18 @@ def create_app(root: Path | None = None, start_worker=True):
         return FileResponse(dest,filename=project.name+'.zip',media_type='application/zip')
 
     @app.get("/api/exports/{filename}")
-    def download_export(filename: str):
+    def download_export(filename: str, download_name: str | None = Query(None, max_length=200)):
         if Path(filename).name != filename:
             raise ValueError("Invalid filename")
         path = store.root / "exports" / filename
         if not path.is_file():
             raise KeyError("Export not found")
-        return FileResponse(path, filename=filename)
+        name = filename
+        if download_name:
+            # The display name never changes which stored file is served.
+            clean = re.sub(r'[<>:"/\\|?*\x00-\x1f\x7f]', '_', download_name).strip(' .')
+            name = (Path(clean).stem[:180].strip(' .') or 'audio') + path.suffix
+        return FileResponse(path, filename=name)
 
     @app.post("/api/projects/{project_id}/rendered")
     async def encode_browser_mix(project_id: str, file: UploadFile = File(...), options: str = Form("{}")):

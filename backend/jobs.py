@@ -121,12 +121,14 @@ class Worker:
             if not gen.style.strip():
                 raise ValueError("Describe the musical style first")
             if gen.useScore and (gen.cot == "off" or not gen.abc.strip()):
-                raise ValueError("An edited score requires melody or melody + chord mode and nonempty ABC")
+                raise ValueError("An enabled score requires melody or melody + chord mode and nonempty ABC")
+            if request.kind == "plan" and gen.cot == "off" and not gen.hum:
+                raise ValueError("Score planning is off. Choose melody or melody + chords to create a score.")
             if gen.hum:
                 from .hum_song import check_source
                 check_source(self.store, project.id, gen.hum)
                 if gen.useScore:
-                    raise ValueError('Your edited Studio score is protected. Detach the hum or turn off Use edited score before generating.')
+                    raise ValueError('Your edited Studio score is protected. Detach the hum or turn off Use saved ABC for next take before generating.')
             if not self.status["available"]:
                 raise ValueError("YuE2 is not installed on this host. Use the GPU container to generate; all composition tools remain available.")
         from .model_runtime import check_downloads

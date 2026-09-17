@@ -33,3 +33,6 @@ Set `DAW_STORAGE_VOLUME_ROOT=/workspace` and `DAW_STORAGE_CAPACITY_GB=80` to mat
 Cadentrail is independent software by Madiator2011, made for Runpod. It is not an official YuE2 or Runpod product and does not imply endorsement. The music engine is [YuE2-3B by m-a-p](https://huggingface.co/m-a-p/YuE2-3B).
 
 Model terms include CC BY-NC 4.0. This template does not grant commercial model rights. Generation length, exact lyrics and vocalist identity are model-dependent. High-quality demos demonstrate particular outputs, not a guarantee for every generation. See `CREDITS.md` and `docs/THIRD-PARTY.md` in the source package.
+
+
+Studio edits and mixes existing audio and MIDI preview instruments. YuE2 generates complete takes; per-track AI instrument rendering is unavailable. An enabled ABC melody guides composition without guaranteeing exact MIDI reproduction. Stem separation estimates parts from finished audio.

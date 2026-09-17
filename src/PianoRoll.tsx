@@ -1,5 +1,8 @@
+import { ScoreUseControl } from "./ScoreUseControl";
 import { useEffect, useRef, useState } from "react";
-import { chordPitches, expandedNotes, transposeChord } from "./editing";
+import { chordPitches, transposeChord } from "./editing";
+import { melodySources } from "./scoreReference";
+import { ScoreReferenceDialog } from "./ScoreReferenceDialog";
 import { measured } from "./performance";
 import {
   Music2,
@@ -61,6 +64,8 @@ export function PianoRoll({
   const [host, size] = useSize<HTMLDivElement>(),
     canvas = useRef<HTMLCanvasElement>(null),
     notation = useRef<HTMLDivElement>(null);
+  const [referenceOpen, setReferenceOpen] = useState(false);
+  const sources = melodySources(p);
   const [mode, setMode] = useState<"piano" | "abc">(initialMode),
     [topPitch, setTopPitch] = useState(84),
     [zoom, setZoom] = useState(64),
@@ -400,27 +405,6 @@ export function PianoRoll({
       report(e);
     }
   };
-  const notesToScore = async () => {
-    try {
-      if (!clip) throw new Error("Select an instrument clip first");
-      const result = await post<{ abc: string }>("/score/write", {
-        notes: expandedNotes(clip),
-        chords: p.chords,
-        tempo: p.tempo,
-        timeSignature: p.timeSignature,
-        title: p.name,
-      });
-      edit("Use edited composition", (p) => {
-        p.generation.abc = result.abc;
-        p.generation.useScore = true;
-        if (p.generation.cot === "off") p.generation.cot = "full";
-      });
-      notice("Edited score is now selected for the next YuE2 candidate.");
-      setMode("abc");
-    } catch (e) {
-      report(e);
-    }
-  };
   return (
     <section className="workspace piano">
       <div className="toolbar">
@@ -438,12 +422,47 @@ export function PianoRoll({
             <Code2 size={14} /> ABC score
           </button>
         </div>
-        <span className="dim">{clip?.name ?? "Select an instrument clip"}</span>
+        <select
+          className="piano-clip-choice"
+          aria-label="Piano roll clip"
+          value={clip?.id ?? ""}
+          onChange={(e) => {
+            const source = sources.find((s) => s.clip.id === e.target.value);
+            if (source) {
+              setState({
+                selectedTrack: source.track.id,
+                selectedClips: [source.clip.id],
+                selectedNotes: [],
+              });
+              setScroll(0);
+            }
+          }}
+        >
+          {!sources.some((s) => s.clip.id === clip?.id) && (
+            <option value={clip?.id ?? ""}>
+              {clip?.name ?? "Select an instrument clip"}
+            </option>
+          )}
+          {sources.map(({ track, clip }) => (
+            <option key={clip.id} value={clip.id}>
+              {track.name} · {clip.name}
+            </option>
+          ))}
+        </select>
         <div className="spacer" />
-        <button className="accent" onClick={() => void notesToScore()}>
-          Use melody for YuE2 →
+        <button className="accent" onClick={() => setReferenceOpen(true)}>
+          Choose melody for YuE2
         </button>
       </div>
+      {referenceOpen && (
+        <ScoreReferenceDialog
+          close={() => setReferenceOpen(false)}
+          applied={() => {
+            setReferenceOpen(false);
+            setMode("abc");
+          }}
+        />
+      )}
       <div className="chord-strip">
         <span className="eyebrow">CHORDS</span>
         <button
@@ -542,7 +561,7 @@ export function PianoRoll({
             edit("Add chord", (p) => {
               p.chords.push({
                 id: id(),
-                beat: Math.max(0, s.cursor - (clip?.beat ?? 0)),
+                beat: Math.max(0, s.cursor),
                 duration: 4,
                 symbol: "C",
               });
@@ -706,6 +725,7 @@ export function PianoRoll({
                 <Download size={13} /> ABC
               </button>
             </div>
+            <ScoreUseControl />
             <textarea
               aria-label="ABC source"
               className="abc-source"

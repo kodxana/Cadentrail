@@ -1,5 +1,25 @@
 [
   {
+    "version": "0.4.12",
+    "title": "Clearer Studio workflows",
+    "summary": "Safer track editing, explicit MIDI references and a clearer path from arrangement to exported audio.",
+    "changes": {
+      "Improved": [
+        "Studio offers a visible Render audio action, explains what is rendered, rejects empty arrangements and names downloads after the project.",
+        "MIDI import previews the available parts, separates MIDI channels and lets you choose whether to adopt the file timing or keep the project grid. Unsupported sound-bank, controller and tempo-map details are explained.",
+        "Choose a pitched MIDI clip as melody guidance, with an optional loop range and project chords. The saved ABC reference must be explicitly enabled; later piano-roll edits do not silently replace it.",
+        "Studio controls, the handbook and API/MCP guidance distinguish complete YuE2 takes from arrangement playback, audio export and estimated stems. Per-track AI rendering and selected-region replacement are unsupported; exact MIDI reproduction is not guaranteed.",
+        "Instrument choices are labeled as built-in Studio preview instruments rather than controls for YuE2 instrumentation."
+      ],
+      "Fixed": [
+        "Deleting a Studio track from its sidebar or timeline header removes the row and its clips, effects and automation. Undo restores it; source audio and generation history are retained.",
+        "Inspecting a generated score leaves the project unchanged. A separate action applies it as the next generation reference.",
+        "Generation rejects enabled score references that are empty, conflict with a hum or have score planning disabled. The reference can always be switched off to repair these settings. Score-only planning is unavailable when planning is off.",
+        "Preparing another take from a hum-guided or direct generation no longer automatically enables an incompatible ABC reference."
+      ]
+    }
+  },
+  {
     "version": "0.4.11",
     "title": "The story of each update",
     "summary": "Browse the changes that shaped your workstation.",

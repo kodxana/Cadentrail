@@ -1,6 +1,7 @@
 import { trimClip, expandedNotes } from "./editing";
 import { measured } from "./performance";
 import { Sections } from "./Sections";
+import { StudioContextMenu, StudioTrackMenu } from "./StudioTrackMenu";
 import { useEffect, useRef, useState } from "react";
 import {
   Plus,
@@ -68,12 +69,15 @@ export function Timeline() {
       w: number;
       h: number;
     } | null>(null),
-    [menu, setMenu] = useState<{ x: number; y: number } | null>(null);
+    [menu, setMenu] = useState<{ x: number; y: number; trackId?: string } | null>(null);
   const visible = Math.max(1, (size.width - HEADER) / s.zoom),
     scroll = clamp(s.scroll, 0, Math.max(0, endBeat(p) + 32 - visible));
   const xBeat = (x: number) => (x - HEADER) / s.zoom + scroll;
   const trackAt = (y: number) => Math.floor((y - TOP + vertical) / ROW);
   const snapped = (b: number) => (s.snap ? Math.round(b / s.grid) * s.grid : b);
+  useEffect(() => {
+    setVertical((value) => Math.min(value, Math.max(0, p.tracks.length * ROW - size.height + TOP)));
+  }, [p.tracks.length, size.height]);
   useEffect(() => {
     for (const a of s.assets)
       if (!peakCache.has(a.id)) {
@@ -338,7 +342,7 @@ export function Timeline() {
       t = p.tracks[index];
     if (x < HEADER) {
       if (t) {
-        setState({ selectedTrack: t.id });
+        setState({ selectedTrack: t.id, selectedClips: [], selectedNotes: [] });
         const local = y - (TOP + index * ROW - vertical);
         if (local > 50 && local < 75 && x < 70)
           edit(x < 40 ? "Mute track" : "Solo track", (p) => {
@@ -485,8 +489,8 @@ export function Timeline() {
           <button onClick={() => addTrack("audio")}>
             <Plus size={14} /> Audio
           </button>
-          <button onClick={() => addTrack("midi")}>
-            <Plus size={14} /> Instrument
+          <button title="Add MIDI notes with a built-in preview synth; this is not a YuE2 instrument slot" onClick={() => addTrack("midi")}>
+            <Plus size={14} /> MIDI instrument
           </button>
           <button onClick={addSection}>
             <Layers size={14} /> Section
@@ -620,6 +624,19 @@ export function Timeline() {
           }}
           onContextMenu={(e) => {
             e.preventDefault();
+            const r = e.currentTarget.getBoundingClientRect();
+            const x = e.clientX - r.left, y = e.clientY - r.top;
+            const track = y >= TOP ? p.tracks[trackAt(y)] : undefined;
+            if (!track) { setMenu(null); return; }
+            if (x < HEADER) {
+              setState({ selectedTrack: track.id, selectedClips: [], selectedNotes: [] });
+              setMenu({ x: e.clientX, y: e.clientY, trackId: track.id });
+              return;
+            }
+            const beat = xBeat(x);
+            const clip = [...track.clips].reverse().find((c) => beat >= c.beat && beat <= c.beat + c.duration);
+            if (!clip) { setMenu(null); return; }
+            setState({ selectedTrack: track.id, selectedClips: s.selectedClips.includes(clip.id) ? s.selectedClips : [clip.id], selectedNotes: [] });
             setMenu({ x: e.clientX, y: e.clientY });
           }}
         />
@@ -643,15 +660,10 @@ export function Timeline() {
         />
         <span>{Math.ceil(endBeat(p) / bars(p))} bars</span>
       </div>
-      {menu && (
-        <div
-          className="context-menu"
-          style={{
-            left: Math.min(menu.x, window.innerWidth - 200),
-            top: Math.min(menu.y, window.innerHeight - 230),
-          }}
-          onMouseLeave={() => setMenu(null)}
-        >
+      {menu?.trackId ? (
+        <StudioTrackMenu trackId={menu.trackId} position={menu} close={() => setMenu(null)} />
+      ) : menu && (
+        <StudioContextMenu position={menu} label="Clip actions" close={() => setMenu(null)}>
           {[
             ["Split at cursor", () => split()],
             ["Duplicate", () => paste("clips", true)],
@@ -664,9 +676,10 @@ export function Timeline() {
                       if (s.selectedClips.includes(c.id)) c.muted = !c.muted;
                 }),
             ],
-            ["Delete", () => deleteSelected()],
+            ["Delete clips", () => deleteSelected()],
           ].map(([label, fn]) => (
             <button
+              role="menuitem"
               key={String(label)}
               onClick={() => {
                 (fn as () => void)();
@@ -676,7 +689,7 @@ export function Timeline() {
               {String(label)}
             </button>
           ))}
-        </div>
+        </StudioContextMenu>
       )}
     </section>
   );

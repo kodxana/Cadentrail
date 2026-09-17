@@ -45,12 +45,12 @@ for (const width of [1440, 390]) {
       });
       await expect(
         changes.getByRole("heading", {
-          name: "The story of each update",
+          name: "Clearer Studio workflows",
           exact: true,
         }),
       ).toBeVisible();
       await page.screenshot({
-        path: ".runtime/0411-changelog-" + width + ".png",
+        path: ".runtime/0412-changelog-" + width + ".png",
         animations: "disabled",
       });
       if (width === 390)

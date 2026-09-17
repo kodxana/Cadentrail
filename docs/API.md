@@ -1,4 +1,4 @@
-# Cadentrail API & Integrations — 0.4.11
+# Cadentrail API & Integrations — 0.4.12
 
 Open **API & Integrations** (the code-brackets button) in Creation, Listen or Radio. A direct link is `/?integrations=1`. The page includes connection setup, token management, the running API reference, an agent workflow guide and recent write activity. It uses the existing workstation design on desktop and phones.
 
@@ -105,3 +105,6 @@ The Runpod section defaults to reconnecting the existing Cadentrail MCP entry af
 Agents is a separate visible entry in Creation, Listen and Radio. Its setup buttons target the existing Connect and Access tokens screens, with a Back to Agents button preserving the selected client and task draft. Developers can continue to open /?integrations=1 directly; users can open /?agents=1.
 
 The guide copies a task request for the user's external agent. It does not host an in-app chat or automatically send a message. Current-project requests contain the project ID/name, not embedded media or lyrics; unsaved project edits must be saved before copying. My connections reports token usage metadata and recent agent-attributed jobs without claiming live online presence.
+
+
+The music capability document also declares `generationOutput`, `independentInstrumentGeneration`, `arrangementControlsGeneration`, `exactMidiReproductionGuaranteed`, and `midiReference`. These describe the installed integration: a complete stereo take, no per-track AI rendering, and explicit ABC guidance. Studio tracks, instrument patches, effects and automation are not generation inputs. See [Studio and the model](GENERATION-EXPECTATIONS.md#studio-and-the-model).

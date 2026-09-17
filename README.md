@@ -21,6 +21,8 @@ No local GPU or installation needed. Core music models are included; optional mo
 
 Create and Studio share the same project and history. Radio’s temporary songs stay out of your Library. Desktop and mobile layouts are included.
 
+YuE2 generates complete takes. Studio arranges and mixes those recordings, imported audio, MIDI preview instruments and separated stems. MIDI/ABC can guide a new take; per-track AI instrument rendering is unavailable, and exact MIDI reproduction is not guaranteed. See [what reaches the model](docs/GENERATION-EXPECTATIONS.md#studio-and-the-model).
+
 ## Get started
 
 1. Open the [Runpod template](https://console.runpod.io/hub/template/dlh907x9dx?ref=vfker49t). Choose **Secure Cloud** and an **RTX 4090 with 24 GB VRAM** (24 GB+ VRAM recommended).

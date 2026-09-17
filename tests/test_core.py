@@ -114,7 +114,8 @@ def test_abc_polyphonic_roundtrip_and_harmony():
 def test_midi_preserves_velocity_channel_and_overlap():
     notes=[Note(beat=0,pitch=60,duration=1,velocity=73,channel=2),Note(beat=.5,pitch=60,duration=2,velocity=119,channel=2),Note(beat=1/3,pitch=80,duration=1/3,channel=5)]
     result=score.read_midi(score.write_midi([n.model_dump() for n in notes],137))
-    actual=sorted(result['tracks'][0]['notes'],key=lambda n:(n['beat'],n['pitch']))
+    actual=sorted([n for track in result['tracks'] for n in track['notes']],key=lambda n:(n['beat'],n['pitch']))
+    assert len(actual) == len(notes)
     expected=sorted(notes,key=lambda n:(n.beat,n.pitch))
     for a,n in zip(actual,expected):
         assert a['pitch']==n.pitch and a['velocity']==n.velocity and a['channel']==n.channel

@@ -217,7 +217,7 @@ export const chapters: Chapter[] = [
         paragraphs: [
           "This is experimental monophonic pitch analysis, not transcription of a mixed song or voice cloning. Noisy or unclear recordings are rejected instead of inventing notes. Clear pitch detection does not guarantee the final performance will reproduce the melody exactly.",
           "The default continues your opening melody. Use just the detected melody keeps that score as guidance; neither choice sets exact song length. The hum adapter guides phrasing as well as the detected notes. Its effect can be subtle.",
-          "A hum uses melody planning for the new take. An existing edited Studio score is protected: detach the hum or explicitly turn off Use edited score before generating. Detaching keeps the recording in the project audio library.",
+          "A hum uses melody planning for the new take. An existing edited Studio score is protected: detach the hum or explicitly turn off Use saved ABC for next take before generating. Detaching keeps the recording in the project audio library.",
           "Community adapter weights remain CC BY-NC 4.0. Original YuE2 stays available in Advanced controls; attaching a hum additionally uses the Hum-to-Song adapter.",
         ],
       },
@@ -282,7 +282,7 @@ export const chapters: Chapter[] = [
     title: "Arrange clips and tracks",
     summary: "Build a song on the timeline while retaining source recordings.",
     keywords:
-      "timeline audio clip split trim move fade gain snap bpm tempo import stems demucs",
+      "timeline audio clip track delete remove undo split trim move fade gain snap bpm tempo import stems demucs",
     related: ["score", "mix", "files"],
     sections: [
       {
@@ -290,6 +290,7 @@ export const chapters: Chapter[] = [
         paragraphs: [
           "Place or import audio into the project, then select its clip in Arrange. Move the clip in time, trim its edges, split at the cursor and use fades to soften edits. Snap helps edits follow the musical grid.",
           "Clip edits are non-destructive references to source audio. Undo reverses project edits; it does not cancel a running generation or recover a deliberately deleted workstation file.",
+          "Right-click a track name in the sidebar or timeline header and choose Delete track to remove the whole row. The sidebar's three-dot button opens the same menu. Right-click a clip and choose Delete clips to keep the row. Undo restores deleted tracks and their edits; source audio remains in the project.",
         ],
       },
       {
@@ -318,10 +319,27 @@ export const chapters: Chapter[] = [
         ],
       },
       {
+        title: "Import MIDI as a melody reference",
+        steps: [
+          "Import a MIDI file, review its parts and choose whether to use its opening tempo and meter. Existing arrangements default to keeping their grid. Tempo maps and expressive controllers are not reproduced; review the import limitations.",
+          "In Piano Roll, use the clip selector to find the lead part. Imported parts use simple preview instruments, not the original General MIDI sound bank. Solo a track in Studio to audition it.",
+          "Choose melody for YuE2 opens a reference review. Select one pitched clip and either the entire clip or the project loop region. Melody only leaves out project chord symbols; Melody + project chords includes the harmony in that range.",
+          "Use for next take saves an ABC snapshot and enables it for generation. Reapply after note or chord changes. Importing MIDI alone does not attach it to YuE2. The saved-score switch is available in Score and Create’s Advanced controls.",
+        ],
+      },
+      {
+        title: "What the model actually uses",
+        paragraphs: [
+          "Next YuE2 take shows whether a saved score or hum is attached. YuE2 receives the description, lyrics or instrumental direction, generation settings and the enabled reference. It does not receive every Studio track, instrument patch, mixer effect or automation lane.",
+          "The output is a new complete take. Melody adherence can vary. Per-track AI rendering and replacement of a selected audio region are not supported. A complex multitrack MIDI is not a set of separate AI instrument slots.",
+          "Studio remains useful for arranging whole takes, recordings, MIDI and separated stems. Render audio exports that arrangement and its mix. Stem separation estimates parts from finished audio and can leave bleed or artifacts.",
+        ],
+      },
+      {
         title: "Score and chords",
         paragraphs: [
-          "YuE2 can plan symbolic music as ABC notation. Score lets you inspect and edit that representation; chord tools help work with its harmony. Review the score and deliberately use it for another generation when ready.",
-          "A new render becomes a new take. The original audio and its generation metadata remain available. Imported or unusual notation may need correction before YuE2 can use it.",
+          "YuE2 can plan symbolic music as ABC notation. Score lets you inspect and edit that representation; chord tools help work with its harmony. Inspect score on a take is read-only. Use this score for next take explicitly replaces the active reference. Review the score and deliberately use it for another generation when ready.",
+          "Generate creates a new complete take. Render audio exports the Studio arrangement. The original audio and its generation metadata remain available. Imported or unusual notation may need correction before YuE2 can use it.",
         ],
       },
     ],
@@ -571,7 +589,7 @@ export const chapters: Chapter[] = [
       {
         title: "Starting from your own audio",
         paragraphs: [
-          "Use the available import action for audio, MIDI, scores or supported project archives. Open or create a project before importing into the workstation. Imported files become assets that can be used by clips and other workflows.",
+          "Use the available import action for audio, MIDI, scores or supported project archives. Open or create a project before importing into the workstation. Imported audio is stored as project assets. MIDI and ABC become editable project data; keep the original files for performance details Studio cannot reproduce.",
           "Listen's queue is a listening order, not a project arrangement. Changing the queue does not rearrange clips in Studio.",
         ],
       },
@@ -639,13 +657,23 @@ export const chapters: Chapter[] = [
   {
     id: "export",
     group: "Finish & share",
-    title: "Choose the right export",
+    title: "Render audio from Studio",
     summary:
       "Download a take, render an arrangement or back up the whole project.",
     keywords:
-      "download export wav flac mp3 audio mix master browser server compatibility tail stems midi abc zip",
+      "render download export wav flac mp3 audio mix master browser server compatibility tail stems midi abc zip",
     related: ["mix", "video", "files"],
     sections: [
+      {
+        title: "From arrangement to audio file",
+        steps: [
+          "Place the audio or instrument clips you want on Studio's timeline, then check the mix with Play.",
+          "Click Render audio in the project toolbar. This renders the arrangement, not every take in the Library.",
+          "Choose WAV or FLAC for lossless audio, or MP3 for sharing. Keep Browser selected to include all supported instruments and effects.",
+          "Leave Selected loop region only off for the whole arrangement. Mute and solo settings affect the result.",
+          "Click Render and download and keep the tab open until the audio file downloads. Server exports finish in Queue, where you can download them.",
+        ],
+      },
       {
         title: "Three different outcomes",
         paragraphs: [
@@ -656,7 +684,7 @@ export const chapters: Chapter[] = [
       {
         title: "Read export preflight",
         paragraphs: [
-          "Choose the renderer and supported format in Export. Preflight reports features a selected renderer cannot reproduce. Instrument notes require browser rendering in the current implementation, and server dynamics can sound different from browser playback.",
+          "Choose the renderer and supported format in Render audio. Preflight reports features a selected renderer cannot reproduce. Instrument notes require browser rendering in the current implementation, and server dynamics can sound different from browser playback.",
           "Check the selected range, normalization and effect tail. Preview the result and listen to the ending so reverb or delay is not unexpectedly cut. Unsupported combinations must be corrected before rendering.",
         ],
       },

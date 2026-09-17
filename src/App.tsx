@@ -1,3 +1,6 @@
+import { previewInstrumentHint } from "./generationInputs";
+import { MidiImportDialog } from "./MidiImportDialog";
+import { ModelInputs } from "./ModelInputs";
 import {newAgentGuide, type AgentGuideState, type AgentClient} from "./agentGuide";
 import { createPortal } from "react-dom";
 import { IntegrationsButton } from "./IntegrationsButton";
@@ -78,6 +81,7 @@ import {
   Image as ImageIcon,
 } from "lucide-react";
 import { Timeline } from "./Timeline";
+import { StudioTrackMenu } from "./StudioTrackMenu";
 const PianoRoll=lazy(()=>import("./PianoRoll").then(m=>({default:m.PianoRoll})));
 import { Mixer, Effects, Slider } from "./Mixer";
 import { Create } from "./Create";
@@ -330,6 +334,7 @@ function Transport() {
 function BrowserPanel({ onImport }: { onImport: () => void }) {
   const s = useStudio(),
     p = s.project!;
+  const [trackMenu, setTrackMenu] = useState<{ trackId: string; x: number; y: number } | null>(null);
   return (
     <aside className="browser-panel">
       <div className="panel-title">
@@ -347,8 +352,12 @@ function BrowserPanel({ onImport }: { onImport: () => void }) {
         <span>{p.tracks.length}</span>
       </div>
       {p.tracks.map((t) => (
+        <div key={t.id} className="browser-track-row" onContextMenu={(e) => {
+          e.preventDefault();
+          setState({ selectedTrack: t.id, selectedClips: [], selectedNotes: [] });
+          setTrackMenu({ trackId: t.id, x: e.clientX, y: e.clientY });
+        }}>
         <button
-          key={t.id}
           className={
             "browser-track " + (s.selectedTrack === t.id ? "selected" : "")
           }
@@ -356,6 +365,7 @@ function BrowserPanel({ onImport }: { onImport: () => void }) {
             setState({
               selectedTrack: t.id,
               selectedClips: t.clips.length ? [t.clips[0].id] : [],
+              selectedNotes: [],
             })
           }
         >
@@ -363,7 +373,14 @@ function BrowserPanel({ onImport }: { onImport: () => void }) {
           {t.type === "midi" ? <Music2 size={13} /> : <AudioLines size={13} />}
           <span>{t.name}</span>
         </button>
+        <button className="browser-track-actions" aria-label={`Track actions for ${t.name}`} aria-haspopup="menu"
+          onClick={(e) => {
+            const r = e.currentTarget.getBoundingClientRect();
+            setTrackMenu({ trackId: t.id, x: r.right, y: r.bottom });
+          }}><MoreHorizontal size={15} /></button>
+        </div>
       ))}
+      {trackMenu && <StudioTrackMenu trackId={trackMenu.trackId} position={trackMenu} close={() => setTrackMenu(null)} />}
       <div className="browser-section">
         <span>AUDIO ASSETS</span>
         <span>{s.assets.length}</span>
@@ -602,7 +619,7 @@ function Inspector() {
                 </label>
                 {t.type === "midi" && (
                   <label className="field">
-                    <span>Instrument</span>
+                    <span>Studio preview instrument</span>
                     <select
                       value={t.instrument}
                       onChange={(e) =>
@@ -616,7 +633,7 @@ function Inspector() {
                         <option key={v}>{v}</option>
                       ))}
                     </select>
-                    <small>Piano is a synthesized audition voice.</small>
+                    <small>{previewInstrumentHint}</small>
                   </label>
                 )}
                 <label className="field">
@@ -902,15 +919,17 @@ function ExportDialog({ close }: { close: () => void }) {
   return (
     <Dialog titleId="export-title" onClose={close}>
       <div className="modal-title">
-        <h2 id="export-title">Export your session</h2>
-        <button aria-label="Close export your session" onClick={close}>
+        <h2 id="export-title">Render audio</h2>
+        <button aria-label="Close render audio" onClick={close}>
           <X size={18} />
         </button>
       </div>
       <p className="help">
-        Browser render includes instruments, routing and every insert. Optional
-        mastering runs on the backend and preserves the raw mix.
+        Turn your Studio arrangement into one stereo audio file. The default
+        browser render includes your instruments, effects, fades and automation. This exports the current arrangement; it does not run YuE2.
+        Muted tracks stay silent and solo settings apply.
       </p>
+      <p className="help">Choose WAV or FLAC for lossless audio, or MP3 for sharing, then select Render and download. Keep this tab open until your file downloads.</p>
       <div className="form-row">
         <label className="field">
           <span>Format</span>
@@ -983,7 +1002,7 @@ function ExportDialog({ close }: { close: () => void }) {
           />
         </label>
       )}
-      <div className="form-row"><label className="field"><span>Render with</span><select value={renderer} onChange={e=>setRenderer(e.target.value as typeof renderer)}><option value="browser">Browser · full instruments and effects</option><option value="server">Server · supported audio tracks</option></select></label><label className="field"><span>Effect tail · seconds</span><input type="number" min={0} max={30} step={1} value={options.tailSeconds} onChange={e=>setOptions({...options,tailSeconds:Number(e.target.value)})}/></label></div>
+      <div className="form-row"><label className="field"><span>Render with</span><select value={renderer} onChange={e=>setRenderer(e.target.value as typeof renderer)}><option value="browser">Browser · Studio instruments and effects</option><option value="server">Server · supported audio tracks</option></select></label><label className="field"><span>Effect tail · seconds</span><input type="number" min={0} max={30} step={1} value={options.tailSeconds} onChange={e=>setOptions({...options,tailSeconds:Number(e.target.value)})}/></label></div>
       <p className="help">{compatibility.totalDuration.toFixed(1)} seconds including tail · approximately {Math.ceil(compatibility.memory/1024/1024)} MiB browser audio buffers. Other browser memory is additional.</p>
       {renderer==="server"&&<p className="help">Server dynamics use FFmpeg and can sound different from browser preview.</p>}
       {compatibility[renderer].length>0&&<ul role="status">{compatibility[renderer].map(reason=><li key={reason}>{reason}</li>)}</ul>}
@@ -992,6 +1011,9 @@ function ExportDialog({ close }: { close: () => void }) {
         try{await save();if(getState().dirty)throw new Error("Save your changes before exporting.");const job=await post<Job>("/jobs",{projectId:p.id,kind:"export",options});setState({jobs:[job,...getState().jobs]});notice("Server export queued. Download it from Queue when it finishes.");close();}catch(e){report(e);}
       }}><ArrowDownToLine size={16}/>{renderer==="browser"?"Render and download":"Queue server export"}</button>
       <div className="inspector-divider" />
+      <details className="export-project-files">
+      <summary>Project and score files</summary>
+      <p className="help">These keep editable project data; use Render and download above for a playable audio file.</p>
       <div className="export-data">
         <button
           onClick={() =>
@@ -1058,6 +1080,7 @@ function ExportDialog({ close }: { close: () => void }) {
           Generation metadata
         </button>
       </div>
+      </details>
       <p className="help">
         Your original audio is retained. Choose browser rendering for the complete
         workstation mix; the server option checks its supported processing first.
@@ -1731,8 +1754,8 @@ export default function App() {
           <button onClick={() => file.current?.click()}>
             <Upload size={14} /> Import
           </button>
-          <button className="export-button" onClick={() => setDialog("export")}>
-            <ArrowDownToLine size={14} /> Export
+          <button className="export-button" title="Render your Studio arrangement to WAV, FLAC or MP3" onClick={() => setDialog("export")}>
+            <ArrowDownToLine size={14} /> Render audio
           </button>
         </div>
       )}
@@ -1851,6 +1874,7 @@ export default function App() {
               </button>
             </nav>
           )}
+          {studioMode && <ModelInputs />}
           {s.view === "create" ? (
             <Create key={s.project!.id} />
           ) : s.view === "visuals" ? (
@@ -1967,6 +1991,7 @@ export default function App() {
           {s.busy}
         </div>
       )}
+      {s.pendingMidi && s.pendingMidi.projectId === s.project?.id && <MidiImportDialog key={s.pendingMidi.fileName}/>}
       {dialog === "export" && s.project && (
         <ExportDialog close={() => setDialog(null)} />
       )}{" "}
